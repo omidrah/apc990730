@@ -1,0 +1,24 @@
+.mat-header-cell {
+  color: #333;
+  font-weight: bold;
+}
+
+.mat-table-container {
+  overflow: auto;
+}
+
+td.mat-column-actions {
+  padding: 8px !important;
+}
+
+.noBullets li{
+    list-style:none;
+}
+
+
+.example-tooltip-red {
+  background: #b71c1c;
+}
+.example-tooltip-size {  
+  font-size: 14px;
+}

@@ -1,0 +1,9 @@
+.form-control {
+  display: block;
+  width: 100%;
+  height: calc(1.5em + .75rem + 15px)
+}
+
+.noCursor {
+  cursor:default !important;
+}

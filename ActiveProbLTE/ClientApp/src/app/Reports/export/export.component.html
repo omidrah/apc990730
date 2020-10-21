@@ -1,0 +1,146 @@
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+  <!-- Content Header (Page header) -->
+  <section class="content-header">
+    <h1>
+      <span translate>Export</span>
+    </h1>
+    <ol class="breadcrumb">
+      <li><a [routerLink]="['']" translate><i class="fa fa-dashboard"></i>Home</a></li>
+      <li class="active"><span translate>Export</span></li>
+    </ol>
+  </section>
+  <!--<app-breadcrumb></app-breadcrumb>-->
+  <!-- Main content -->
+  <section class="content">
+
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="box box-primary">
+          <form class="form-horizontal" [formGroup]="exportForm" (ngSubmit)="save()" #formDir="ngForm" novalidate>
+            <div class="box-body">
+
+              <div class="row">
+                <div class="col-lg-6" *ngIf="!(config && config.name === 'Modem')">
+                  <div class="form-group">
+                    <label for="inputName" class="col-sm-3 control-label"><span translate>Test</span>:</label>
+                    <div class="col-sm-9">
+                      <select class="form-control" data-val="true" formControlName="definedTestId">
+                        <option value=0 translate>SelectTestPlease</option>
+                        <option *ngFor="let test of definedTestList" [ngValue]=test.id>
+                          {{test.title}}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="inputSerialNo" class="col-sm-3 control-label"><span translate>Device</span>:</label>
+                    <div class="col-sm-9">
+                      <select class="form-control" data-val="true" formControlName="machineId">
+                        <option value=0 translate>SelectDevicePlease</option>
+                        <option *ngFor="let machine of machineList" [ngValue]="machine.id">
+                          {{machine.name}}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="inputName" class="col-sm-3 control-label"><span translate>ReportStartDate</span>:</label>
+                    <div class="col-sm-9">
+                      <div class="row flex-container">
+                        <div class="col-sm-5">
+                          <input type="time" class="form-control" formControlName="beginDateTime">
+                        </div>
+                        <div class="col-sm-7">
+                          <input [matDatepicker]="beginDate" type="text" class="form-control" formControlName="beginDate" (click)="beginDate.open()">
+                          <mat-datepicker #beginDate></mat-datepicker>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="inputSerialNo" class="col-sm-3 control-label"><span translate>ReportEndDate</span>:</label>
+                    <div class="col-sm-9">
+                      <div class="row flex-container">
+                        <div class="col-sm-5">
+                          <input type="time" class="form-control" formControlName="endDateTime">
+                        </div>
+                        <div class="col-sm-7">
+                          <input [matDatepicker]="endDate" type="text" class="form-control" formControlName="endDate" (click)="endDate.open()">
+                          <mat-datepicker #endDate></mat-datepicker>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="inputName" class="col-sm-3 control-label"><span translate>SimcardNo</span>:</label>
+                    <div class="col-sm-9">
+                      <select class="form-control" data-val="true" formControlName="sim">
+                        <option value=0 translate>SelectSimcardNoPlease</option>
+                        <option value=1> 1 </option>
+                        <option value=2> 2 </option>
+                        <option value=3> 3 </option>
+                        <option value=4> 4 </option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="inputSerialNo" class="col-sm-3 control-label"><span translate>Parameter</span>:</label>
+                    <div class="col-sm-9">
+                      <select class="form-control" data-val="true" formControlName="ParamKml">
+                        <option *ngFor="let param of paramKMlExport" [ngValue]="param.title">
+                          {{param.title}}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="inputName" class="col-sm-3 control-label"><span translate>Zone</span>:</label>
+                    <div class="col-sm-9">
+                      <select class="form-control" data-val="true" formControlName="zone">
+                        <option value=0 translate>SelectZonePlease</option>
+                        <option *ngFor="let z of zoneList" [ngValue]="z.zoneId">
+                          {{z.title}}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div><!-- /.box-body -->
+            <div class="box-footer">
+              <button class="btn btn-info rowEndAligne" (click)="genKml()" translate>DownloadKML</button>
+              <button type="submit" class="btn btn-primary rowEndAligne" translate>DownloadExcel</button>
+            </div><!-- /.box-footer -->
+          </form>
+          <div class="overlay" *ngIf="showloader">
+            <i class="fa fa-refresh fa-spin"></i>
+          </div>
+        </div><!-- /.box -->
+      </div><!-- /.col -->
+    </div><!-- /.row -->
+
+  </section><!-- /.content -->
+</div><!-- /.content-wrapper -->

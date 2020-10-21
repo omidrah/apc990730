@@ -1,0 +1,21 @@
+<!--<ol class="breadcrumb">
+  <li><a href="#"><i class="fa fa-dashboard"></i> خانه</a></li>
+  <li><a href="#">فهرست گروه ها</a></li>
+  <li class="active">تخصیص تست به گروه</li>
+</ol>-->
+
+
+
+<section class="content-header">
+  <h1>
+    {{ PageTitle }}
+    <!--<small>توضیحات</small>-->
+  </h1>
+  <ol class="breadcrumb">
+    <li *ngFor="let breadcrumb of breadcrumbs">
+      <a [routerLink]="breadcrumb.url" routerLinkActive="router-link-active">
+        <!--<i class="fa fa-dashboard"></i>--> {{ breadcrumb.label }}
+      </a>
+    </li>
+  </ol>
+</section>

@@ -1,0 +1,160 @@
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+  <!-- Content Header (Page header) -->
+  <section class="content-header">
+    <h1>
+      test
+    </h1>
+    <ol class="breadcrumb">
+      <li><a [routerLink]="['']"><i class="fa fa-dashboard"></i> خانه</a></li>
+      <li class="active">test</li>
+    </ol>
+  </section>
+
+  <!--<app-breadcrumb></app-breadcrumb>-->
+
+  <!-- Main content -->
+  <section class="content">
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="box box-primary">
+          <div class="box-body">
+            <div dir="rtl">
+
+              <mat-form-field>
+                <mat-label>جستجو</mat-label>
+                <input matInput (keyup)="applyFilter($event)" placeholder="مثال. دستگاه 2" #input>
+              </mat-form-field>
+
+              <div class="mat-table-container mat-elevation-z8">
+                <table mat-table [dataSource]="dataSource" matSort class=" table table-hover table-striped text-nowrap">
+
+                  <!--- Note that these columns can be defined in any order.
+                The actual rendered columns are set as a property on the row definition" -->
+
+                  <ng-container matColumnDef="index">
+                    <th mat-header-cell *matHeaderCellDef> Index </th>
+                    <td mat-cell *matCellDef="let element;let i = index;">
+                      {{this.paginator.pageIndex == 0 ? i + 1 : 1 + i + this.paginator.pageIndex * this.paginator.pageSize}}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="name">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> name </th>
+                    <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="identifier">
+                    <th mat-header-cell *matHeaderCellDef> identifier </th>
+                    <td mat-cell *matCellDef="let element"> {{element.identifier}} </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="machineTypeTitle">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> machineTypeTitle</th>
+                    <td mat-cell *matCellDef="let element"> {{element.machineTypeTitle}} </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="machineGroupTitle">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> machineGroupTitle sticky</th>
+                    <td mat-cell *matCellDef="let element"> {{element.machineGroupTitle}} </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="Location">
+                    <th mat-header-cell *matHeaderCellDef> latitude</th>
+                    <td mat-cell *matCellDef="let element"> {{element.latitude}} ,  {{element.longitude}}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="imeI1">
+                    <th mat-header-cell *matHeaderCellDef> imeI1</th>
+                    <td mat-cell *matCellDef="let element"> {{element.imeI1}} </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="imeI2">
+                    <th mat-header-cell *matHeaderCellDef> imeI2</th>
+                    <td mat-cell *matCellDef="let element"> {{element.imeI2}} </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="version">
+                    <th mat-header-cell *matHeaderCellDef> version</th>
+                    <td mat-cell *matCellDef="let element"> {{element.version}} </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="status">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> status</th>
+                    <td mat-cell *matCellDef="let element">
+                      <i [attr.title]="element.status==true ? 'Connected' : 'Disconnected' " class="fa fa-2x"
+                         [ngClass]="{'fa-minus-square text-red': element.status==false , 'fa-check-square text-green': element.status==true}">
+                      </i>
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="testStatus">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> testStatus</th>
+                    <td mat-cell *matCellDef="let element">
+                      <i [attr.title]="element.testStatus==true  ?  'Running'  : element.testStatus==false ? 'Waiting' : 'Not Have'   " class="fa fa-2x"
+                         [ngClass]=" {'fa-hourglass-end text-yellow': element.testStatus==false , 'fa-check-square text-green': element.testStatus==true, 'fa-frown-o text-light-blue': element.testStatus==null} "></i>
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="actions" sticky [stickyEnd]="true">
+                    <th mat-header-cell *matHeaderCellDef> actions</th>
+                    <td mat-cell *matCellDef="let element">
+
+                      <a class="btn btn-default gridbutton" [routerLink]="['/machine/edit/' , element.id]" title="Edit"><i class="fa fa-edit"></i></a>
+                      <a class="btn btn-default gridbutton" [class.disabled]="!element.deletable" (click)="delete(element.id)" title="Delete"><i class="fa fa-trash"></i></a>
+                      <a class="btn btn-default gridbutton" [routerLink]="['/Test/Assignment/Machine/' , element.id , element.name]" title="Test Assignment"><i class="fa fa-calendar-plus-o"></i></a>
+                      <a class="btn btn-default gridbutton" [routerLink]="['/machine/Version/' , element.id , element.name , element.imeI1]" title="Upgrade Version"><i class="fa fa-upload"></i></a>
+
+                    </td>
+                  </ng-container>
+
+
+
+
+                  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                </table>
+                <mat-paginator [pageSize]="10" [pageSizeOptions]="[10 , 25 , 50 , 100]" [showFirstLastButtons]="true"></mat-paginator>
+
+              </div>
+            </div>
+
+            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-default">
+              Launch Default Modal
+            </button>
+
+
+
+          </div><!-- /.box-body -->
+          <div class="overlay" *ngIf="!dataSource">
+            <i class="fa fa-refresh fa-spin"></i>
+          </div>
+        </div><!-- /.box -->
+      </div><!-- /.col -->
+    </div><!-- /.row -->
+
+    <div class="modal fade" id="modal-default" style="display: none;">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">×</span>
+            </button>
+            <h4 class="modal-title">Default Modal</h4>
+          </div>
+          <div class="modal-body">
+            <p>One fine body…</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary">Save changes</button>
+          </div>
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
+
+
+  </section><!-- /.content -->
+</div><!-- /.content-wrapper -->

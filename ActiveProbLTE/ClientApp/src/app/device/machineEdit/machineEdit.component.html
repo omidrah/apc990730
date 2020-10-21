@@ -1,0 +1,250 @@
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+  <!-- Content Header (Page header) -->
+  <section class="content-header">
+    <h1>
+    
+      {{breadcroumb | translate}}
+    <small>{{machineName }}</small>
+    </h1>
+
+    <ol class="breadcrumb">
+      <li><a [routerLink]="['']" translate><i class="fa fa-dashboard"></i>Home</a></li>
+      <li><a [routerLink]="['/machine']" translate>DeviceList</a></li>
+      <li class="active">{{breadcroumb | translate}} {{machineName}}</li>
+    </ol>
+  </section>
+
+  <!--<app-breadcrumb></app-breadcrumb>-->
+  <!-- Main content -->
+  <section class="content">
+    <div class="row">
+
+      <div class="col-md-12">
+        <!-- Horizontal Form -->
+        <div class="box box-primary">
+
+          <form class="form-horizontal" [formGroup]="machineForm" (ngSubmit)="save()" #formDir="ngForm" novalidate>
+            <div class="box-body">
+
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="inputName" class="col-sm-3 control-label">
+                      <span class="text-danger">* </span>
+                      <span translate>Name</span>:
+                    </label>
+                    <div class="col-sm-9">
+                      <input class="form-control" type="text" formControlName="name" required>
+                      <span class="text-danger" *ngIf="name.invalid && ( name.touched || formDir.submitted)" translate>NameIsRequired</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="inputSerialNo" class="col-sm-3 control-label">
+                      <span class="text-danger">* </span>
+                      <span translate>SerialNo</span>:
+                    </label>
+                    <div class="col-sm-9">
+                      <input class="form-control"
+                             type="text" formControlName="serialNo" [attr.disabled]="canEdit || (config && config.name === 'Modem') ? null: 'disabled'" required>
+                      <span class="text-danger" *ngIf="serialNo.invalid && ( serialNo.touched || formDir.submitted)" translate>SerialNoIsRequired</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="inputName" class="col-sm-3 control-label">
+                      <span class="text-danger">* </span>
+                      <span translate>Identifier</span>:
+                    </label>
+                    <div class="col-sm-9">
+                      <input class="form-control" type="text" formControlName="identifier"
+                             [attr.disabled]="canEdit || (config && config.name === 'Modem') ? null: 'disabled'" required>
+                      <span class="text-danger" *ngIf="identifier.invalid && ( identifier.touched || formDir.submitted)" translate>IdentifierIsRequired</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="inputSerialNo" class="col-sm-3 control-label">
+                      <span class="text-danger">* </span>
+                      <span translate>Type</span>:
+                    </label>
+                    <div class="col-sm-9">
+                      <select class="form-control" data-val="true" formControlName="machineTypeId" [attr.disabled]="canEdit || (config && config.name === 'Modem')? null: 'disabled'" required>
+                        <option value=0 translate>SelectMachineTypePlease</option>
+                        <option *ngFor="let type of machineTypeList" [ngValue]=type.id>
+                          {{type.title}}
+                        </option>
+                      </select>
+                      <span class="text-danger" *ngIf="machineTypeId?.invalid && ( machineTypeId.touched || formDir.submitted)" translate>MachineTypeIsRequired</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="inputName" class="col-sm-3 control-label">
+                      <span translate>MachineGroupTitle</span>:
+                    </label>
+                    <div class="col-sm-9">
+
+                      <div class="input-group">
+
+                        <span class="input-group-addon" data-toggle="modal" data-target="#modal-default">
+                          <i class="fa fa-search"></i> {{ 'Select' | translate }} <i class="fa fa-search-o"></i>
+                        </span>
+                        <input class="form-control noCursor" type="text" formControlName="machineGroupTitle"
+                               [attr.disabled]="'disabled'">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="hostName" class="col-sm-3 control-label">
+                      <span class="text-danger">* </span>
+                      <span translate>HostName</span>:
+                    </label>
+                    <div class="col-sm-9">
+                      <input class="form-control" type="text" formControlName="hostName" [attr.disabled]="canEdit || (config && config.name === 'Modem') ? null: 'disabled'" required>
+                      <span class="text-danger" *ngIf="hostName.invalid && canEdit && ( hostName.touched || formDir.submitted)" translate>HostNameIsRequired</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="timeZone" class="col-sm-3 control-label">
+                      <span class="text-danger">* </span>
+                      <span translate>TimeZone</span>:
+                    </label>
+                    <div class="col-sm-9">
+                      <input class="form-control" type="text" formControlName="timeZone" [attr.disabled]="canEdit || (config && config.name === 'Modem') ? null: 'disabled'" required>
+                      <span class="text-danger" *ngIf="timeZone.invalid && canEdit && ( timeZone.touched || formDir.submitted)" translate>TimeZoneIsRequired</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!--<div class="row">
+                <div class="col-lg-6">
+                </div>
+
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="timeZone" class="col-sm-3 control-label">
+                      <span class="text-danger">* </span>
+                      <span translate>TimeZone</span> 2:
+                    </label>
+                    <div class="col-sm-9">
+                      
+                      <select class="form-control" data-val="true" formControlName="timeZone" [attr.disabled]="canEdit || (config && config.name === 'Modem')? null: 'disabled'" required>
+                        <option value=0 translate>SelectTimeZonePlease</option>
+                        <option *ngFor="let type of timeZoneTypes" value="type">
+                          {{type}}
+                        </option>
+                      </select>
+
+                      <span class="text-danger" *ngIf="timeZone.invalid && ( timeZone.touched || formDir.submitted)" translate>TimeZoneIsRequired</span>
+                    </div>
+                  </div>
+                </div>
+              </div>-->
+
+              <div class="row" *ngIf="(config && config.name === 'Modem')">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="imei1" class="col-sm-3 control-label">
+                      <span class="text-danger">* </span>
+                      <span translate>IMEI</span>:
+                    </label>
+                    <div class="col-sm-9">
+                      <input class="form-control" type="text" formControlName="imei1" required>
+                      <span class="text-danger" *ngIf="imei1.invalid && ( imei1.touched || formDir.submitted)" translate>IMEIIsRequired</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="imei2" class="col-sm-3 control-label">
+                      <span class="text-danger">* </span>
+                      <span translate>ICCID</span>:
+                    </label>
+                    <div class="col-sm-9">
+                      <input class="form-control" type="text" formControlName="imei2" required>
+                      <span class="text-danger" *ngIf="imei2.invalid && ( imei2.touched || formDir.submitted)" translate>ICCIDIsRequired</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+
+            </div><!-- /.box-body -->
+            <div class="box-footer">
+              <button class="btn btn-danger  rowEndAligne" (click)="cancel()" translate>Cancel</button>
+              <button type="submit" class="btn btn-primary  rowEndAligne" translate>Save</button>
+            </div><!-- /.box-footer -->
+          </form>
+
+        </div><!-- /.box -->
+
+      </div>
+    </div>
+
+
+    <div class="modal fade" id="modal-default" data-backdrop="static" style="display: none;">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">×</span>
+            </button>
+            <h4 class="modal-title" translate>Noticeable</h4>
+          </div>
+          <div class="modal-body">
+
+            <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
+
+              <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding>
+                <button mat-icon-button disabled></button>
+                <mat-radio-button class="example-radio-button control-label fa-lg" [checked]="node.checked" (change)="doSelect(node)">
+                  {{node.item}}
+                </mat-radio-button>
+              </mat-tree-node>
+              <mat-tree-node *matTreeNodeDef="let node; when: hasChild" matTreeNodePadding>
+                <button mat-icon-button matTreeNodeToggle
+                        [attr.aria-label]="'toggle '">
+                  <mat-icon class="mat-icon-rtl-mirror">
+                    {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+                  </mat-icon>
+                </button>
+                <mat-radio-button class="example-radio-button control-label fa-lg" [checked]="node.checked" (change)="doSelect(node)">
+                  {{node.item}}
+                </mat-radio-button>
+              </mat-tree-node>
+            </mat-tree>
+          </div>
+          <div class="modal-footer">
+            <!--<button type="button" class="btn btn-default pull-left" data-dismiss="modal" translate>Cancel</button>-->
+            <button type="button" class="btn btn-primary" data-dismiss="modal" translate>Select</button>
+          </div>
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
+
+  </section><!-- /.content -->
+</div><!-- /.content-wrapper -->

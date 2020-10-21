@@ -1,0 +1,16 @@
+
+.modal_body {
+  padding:0px;
+  margin:0px;
+}
+.d-none{
+  display: none;
+}
+.center {
+    position: absolute;
+    top: 200%;
+    left: 50%;
+    -moz-transform: translateX(-50%) translateY(-50%);
+    -webkit-transform: translateX(-50%) translateY(-50%);
+    transform: translateX(-50%) translateY(-50%);
+}

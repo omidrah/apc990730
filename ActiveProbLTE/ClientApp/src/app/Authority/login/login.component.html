@@ -1,0 +1,58 @@
+<div class="fullSize login-page">
+  <div class="login-box" style="">
+
+    <div class="login-box-body">
+
+
+      <div class="rowEndAligne ">
+        <button type="button" class="btn btn-warning btn-flat" style="margin:5px 10px;" (click)="changeLangage('ar')" translate>Persian</button>
+        <button type="button" class="btn btn-warning btn-flat" (click)="changeLangage('en')" translate>English</button>
+      </div>
+
+      <div class="login-logo">
+        <img src="/assets/dist/img/KCLogo.png" alt="Alternate Text" />
+      </div>
+      <div class="login-logo">
+        <img class="logo" src="/assets/dist/img/loginActivProb.png" alt="سامانه پایش شبکه" style="margin: auto; height: 150px" />
+      </div><!-- /.login-logo -->
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" id="form1" *ngIf="!showForgetPass">
+        <div class="form-group has-feedback">
+          <input type="email" class="form-control" placeholder="{{ 'TestDataUserName' | translate }}" formControlName="username">
+          <span class="fa fa-user form-control-feedback"></span>
+        </div>
+        <div class="form-group has-feedback">
+          <input type="password" class="form-control" placeholder="{{ 'TestDataPassword' | translate }}" formControlName="password">
+          <span class="fa fa-lock form-control-feedback"></span>
+        </div>
+        <div class="form-check">
+          <label>
+            <input type="checkbox" name="rememberMe" formControlName="rememberMe"> Remember me
+          </label>
+        </div>
+        <div class="row">
+          <!-- /.col -->
+          <div class="col-xs-12">
+            <button type="submit" class="btn btn-warning btn-block btn-flat" translate>Login</button>
+          </div><!-- /.col -->
+        </div>
+      </form>
+
+      <div *ngIf="showForgetPass">
+        <div class="form-group has-feedback">
+          <input type="email" class="form-control" placeholder="{{ 'Email' | translate }}" [(ngModel)]="email">
+          <span class="fa fa-envelope form-control-feedback"></span>
+        </div>
+        <div class="row">
+          <!-- /.col -->
+          <div class="col-xs-12">
+            <button type="submit" class="btn btn-warning btn-block btn-flat" translate>SendNewPassword</button>
+          </div><!-- /.col -->
+        </div>
+      </div>
+      <br />
+      <button type="button" class="btn btn-link text-decoration-none" (click)="showForgetPass = !showForgetPass" ng-model="showForgetPass" style="text-decoration:none;" translate>ForgotPassword</button>
+
+    </div><!-- /.login-box-body -->
+  </div><!-- /.login-box -->
+</div>

@@ -1,0 +1,7 @@
+<app-appheader [hidden]="!isAuthenticate"></app-appheader>
+<app-appmenu [hidden]="!isAuthenticate"></app-appmenu>
+
+<router-outlet></router-outlet>
+<app-appfooter [hidden]="!isAuthenticate"></app-appfooter>
+<app-appsetting [hidden]="!isAuthenticate"></app-appsetting>
+

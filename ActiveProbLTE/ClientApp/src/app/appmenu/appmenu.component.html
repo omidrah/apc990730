@@ -1,0 +1,108 @@
+<!-- right side column. contains the logo and sidebar -->
+<aside class="main-sidebar">
+
+  <!-- sidebar: style can be found in sidebar.less -->
+  <section class="sidebar">
+
+    <!-- Sidebar user panel (optional) -->
+    <div class="user-panel">
+      <div class="image rowStartAligne">
+        <img src="assets/dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
+      </div>
+      <div class="info">
+        <p *ngIf="user">{{user.firstName}} {{user.lastName}}</p>
+        <!-- Status
+  <a href="#"><i class="fa fa-circle text-success"></i> آنلاین</a>-->
+        <p style="direction:ltr;">{{ time }}</p> 
+      </div>
+    </div>
+
+
+    <!-- Sidebar Menu -->
+    <ul class="sidebar-menu" data-widget="tree">
+      <li class="treeview">
+        <a href="#">
+          <i class="fa fa-simplybuilt"></i>
+          <span translate>DeviceManagement</span>
+          <i class="fa fa-angle-left pull-left"></i>
+        </a>
+        <ul class="treeview-menu">
+          <li>
+            <a [routerLink]="['/machine']">
+              <i class="fa fa-list"></i><span translate>DeviceList</span>
+            </a>
+          </li>
+          <li>
+            <a [routerLink]="['machine/Group']">
+              <i class="fa fa-users"></i><span translate>DeviceGroup</span>
+            </a>
+          </li>
+          <li>
+            <a [routerLink]="['/ol']">
+              <i class="fa fa-television"></i><span translate>DeviceMonitor</span>
+            </a>
+          </li>
+        </ul>
+      </li>
+      <li *ngIf="config && config.properties && config.properties.testPage ">
+        <a [routerLink]="['/Test']"><i class="fa fa-newspaper-o"></i><span translate>TestManagement</span></a>
+      </li>
+
+      <li class="treeview">
+        <a href="#">
+          <i class="fa fa-database"></i>
+          <span translate>DataManagement</span>
+          <i class="fa fa-angle-left pull-left"></i>
+        </a>
+        <ul class="treeview-menu">
+          <li>
+            <a [routerLink]="['/splunk/fetch-data']">
+              <i class="fa fa-book"></i>
+              <span translate>Report</span>
+            </a>
+          </li>
+          <li>
+            <a [routerLink]="['/export']">
+              <i class="fa fa-download"></i>
+              <span translate>Export</span>
+            </a>
+          </li>
+          <li>
+            <a [routerLink]="['/export/Notification']">
+              <i class="fa fa-bell"></i>
+              <span translate>Notifications</span>
+            </a>
+          </li>
+        </ul>
+      </li>
+
+
+
+
+      <!--<li class="treeview">
+        <a href="#">
+          <i class="fa fa-database"></i>
+          <span translate>SystemManagement</span>
+          <i class="fa fa-angle-left pull-left"></i>
+        </a>
+        <ul class="treeview-menu">
+          <li>
+            <a [routerLink]="['/export/Users']">
+              <i class="fa fa-book"></i>
+              <span translate>Users</span>
+            </a>
+          </li>
+          <li>
+            <a [routerLink]="['/export/Roles']">
+              <i class="fa fa-download"></i>
+              <span translate>Roles</span>
+            </a>
+          </li>         
+        </ul>
+      </li>-->
+
+    </ul>
+    <!-- /.sidebar-menu -->
+  </section>
+  <!-- /.sidebar -->
+</aside>

@@ -1,0 +1,117 @@
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+  <!-- Content Header (Page header) -->
+  <section class="content-header">
+    <h1>
+      <span translate>UpdateGroupDevices</span>
+      <small>{{ sGroupTitle }}</small>
+    </h1>
+    <ol class="breadcrumb">
+      <li><a [routerLink]="['']" translate><i class="fa fa-dashboard"></i>Home</a></li>
+      <li><a [routerLink]="['/machine/Group']"><span translate>DeviceGroup</span></a></li>
+      <li class="active"><span translate>UpdateGroupDevices</span>  {{ sGroupTitle }} </li>
+    </ol>
+  </section>
+
+  <!--<app-breadcrumb></app-breadcrumb>-->
+  <!-- Main content -->
+  <section class="content">
+
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="box box-primary">
+          <!--<div class="box-header">
+            <i class="fa fa-simplybuilt" style="margin-left:10px;"></i>
+            <h3 class="box-title ">فهرست دستگاه ها</h3>
+          </div>-->
+          <!-- /.box-header -->
+          <div class="box-body">
+              <div class="row" style="margin-bottom:10px;">
+                <div class="col-md-12">
+                  <mat-form-field>
+                    <mat-label translate>Search</mat-label>
+                    <input matInput (keyup)="applyFilter($event)" #input>
+                  </mat-form-field>
+                
+                  <input type="file" #file placeholder="Choose file" (change)="uploadFile(file.files)" style="display:none">
+                  <button type="button" class="btn btn-success btn-lg rowEndAligne" (click)="file.click()"><span translate>Update</span>  <i class="fa fa-upload"></i></button>
+                </div>
+              </div>
+              <div class="row h-100 justify-content-center align-items-center">
+                <span class="upload" *ngIf="progress > 0">
+                  {{progress}}%
+                </span>
+                <span class="upload" *ngIf="message">
+                  {{message}}
+                </span>
+              </div>
+                            
+              <div class="mat-table-container mat-elevation-z8">
+                <table mat-table [dataSource]="dataSource" matSort class="table table-hover table-striped text-nowrap">
+
+                  <!--- Note that these columns can be defined in any order.
+      The actual rendered columns are set as a property on the row definition" -->
+
+                  <ng-container matColumnDef="index">
+                    <th mat-header-cell *matHeaderCellDef><span translate>Row</span></th>
+                    <td mat-cell *matCellDef="let element;let i = index;">
+                      {{this.paginator.pageIndex == 0 ? i + 1 : 1 + i + this.paginator.pageIndex * this.paginator.pageSize}}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="faCreateDate">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header><span translate>CreateDate</span></th>
+                    <td mat-cell *matCellDef="let element"> {{element.faCreateDate}} </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="fileDownloadAddress">
+                    <th mat-header-cell *matHeaderCellDef><span translate>FileAddress</span></th>
+                    <td mat-cell *matCellDef="let element"> {{element.fileDownloadAddress}} </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="isDone">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header><span translate>Status</span></th>
+                    <td mat-cell *matCellDef="let element">
+                      <i title="{{ (element.isDone ? 'Successful' : 'Unsuccessful' ) | translate }}" class="fa fa-2x" [ngStyle]="{'color': element.isDone ? 'green' : 'red'}"
+                         [ngClass]=" { 'fa-minus-square': !element.isDone, 'fa-check-square': element.isDone} "></i>
+                    </td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                </table>
+                <mat-paginator [pageSize]="10" [pageSizeOptions]="[10 , 25 , 50 , 100]" [showFirstLastButtons]="true"></mat-paginator>
+
+              </div>
+          </div><!-- /.box-body -->
+          <div class="overlay" *ngIf="showloader">
+            <i class="fa fa-refresh fa-spin"></i>
+          </div>
+        </div><!-- /.box -->
+      </div><!-- /.col -->
+    </div><!-- /.row -->
+
+    <div class="modal fade" id="modal-default" data-backdrop="static" style="display: none;">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">×</span>
+            </button>
+            <h4 class="modal-title"><span translate>Noticeable</span></h4>
+          </div>
+          <div class="modal-body">
+            <p translate>GroupVersionConfirmMessage</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default pull-left" data-dismiss="modal" translate>No</button>
+            <button type="button" class="btn btn-primary" (click)="doUpdate()" translate>Yse</button>
+          </div>
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
+
+  </section><!-- /.content -->
+</div><!-- /.content-wrapper -->

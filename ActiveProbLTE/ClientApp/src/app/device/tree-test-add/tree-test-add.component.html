@@ -1,0 +1,108 @@
+<!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        Test
+      </h1>
+      <ol class="breadcrumb">
+        <li><a [routerLink]="['']"><i class="fa fa-dashboard"></i> خانه</a></li>
+        <li class="active">Test</li>
+      </ol>
+    </section>
+    <!--<app-breadcrumb></app-breadcrumb>-->
+    <!-- Main content -->
+    <section class="content">
+      <div dir="rtl">
+
+        <div class="row">
+          <div class="col-xs-12">
+            <div class="box box-primary">
+              <!--<div class="box-header">
+              <i class="fa fa-simplybuilt" style="margin-left:10px;"></i>
+              <h3 class="box-title ">فهرست دستگاه ها</h3>
+            </div>-->
+              <!-- /.box-header -->
+              <div class="box-body">
+
+                <div class="row" style="margin-bottom:10px;">
+                  <div class="col-lg-12">
+                    <a class="btn btn-success btn-lg" (click)="addRootNode()">ایجاد سر گروه جدید <i class="fa fa-plus"></i></a>
+                  </div>
+                </div>
+
+                <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
+                  <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding>
+                    <button mat-icon-button disabled></button>
+
+                    <div [hidden]="node.editing">
+                      <label class="control-label fa-lg">{{node.item}}</label>
+
+                      <button class=" btn-lg" mat-icon-button matTooltip="حذف" matTooltipClass="example-tooltip-red" matTooltipPosition="left" (click)="removeNode(node)"><mat-icon>delete</mat-icon></button>
+                      <button mat-icon-button matTooltip="اصلاح" matTooltipClass="example-tooltip-red" matTooltipPosition="left" (click)="editNode(node)"><mat-icon>edit</mat-icon></button>
+                      <button mat-icon-button matTooltip="افزودن زیر گروه" matTooltipClass="example-tooltip-red" matTooltipPosition="left" (click)="addNewItem(node)"><mat-icon>add</mat-icon></button>
+
+                      <button mat-icon-button matTooltip="تخصیص تست به گروه" matTooltipClass="example-tooltip-red" matTooltipPosition="left" (click)="groupTestAssignment(node)"><mat-icon>assignment</mat-icon></button>
+                      <button mat-icon-button matTooltip="به روزرسانی نرم افزار گروه" matTooltipClass="example-tooltip-red" matTooltipPosition="left" (click)="groupUpdateAssignment(node)"><mat-icon>update</mat-icon></button>
+                    </div>
+
+                    <div [hidden]="!node.editing">
+                      <button mat-icon-button disabled></button>
+                      <mat-form-field>
+                        <input matInput #itemValue placeholder="عنوان گروه" [value]="node.item">
+                      </mat-form-field>
+                      <button mat-icon-button matTooltip="ذخیره" matTooltipClass="example-tooltip-red" matTooltipPosition="left" (click)="saveNode(node, itemValue.value)"><mat-icon>save</mat-icon></button>
+                      <button mat-icon-button matTooltip="انصراف" matTooltipClass="example-tooltip-red" matTooltipPosition="left" (click)="cancelEditNode(node)"><mat-icon>cancel</mat-icon></button>
+                    </div>
+
+                  </mat-tree-node>
+
+                  <mat-tree-node *matTreeNodeDef="let node; when: hasNoContent" matTreeNodePadding>
+                    <button mat-icon-button disabled></button>
+                    <mat-form-field>
+                      <input matInput #itemValue1 placeholder="عنوان گروه">
+                    </mat-form-field>
+                    <button mat-button matTooltip="ذخیره" matTooltipClass="example-tooltip-red" matTooltipPosition="left" (click)="saveNode(node, itemValue1.value)"><mat-icon>save</mat-icon></button>
+                    <button mat-button matTooltip="انصراف" matTooltipClass="example-tooltip-red" matTooltipPosition="left" (click)="removeTempNode(node)"><mat-icon>cancel</mat-icon></button>
+                  </mat-tree-node>
+
+                  <mat-tree-node *matTreeNodeDef="let node; when: hasChild" matTreeNodePadding>
+                    <button mat-icon-button matTreeNodeToggle
+                            [attr.aria-label]="'toggle '">
+                      <mat-icon class="mat-icon-rtl-mirror">
+                        {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+                      </mat-icon>
+                    </button>
+                    <div [hidden]="node.editing">
+                      <label class="control-label fa-lg">{{node.item}}</label>
+
+                      <button mat-icon-button matTooltip="حذف" matTooltipClass="example-tooltip-red" matTooltipPosition="left" (click)="removeNode(node)"><mat-icon>delete</mat-icon></button>
+                      <button mat-icon-button matTooltip="اصلاح" matTooltipClass="example-tooltip-red" matTooltipPosition="left" (click)="editNode(node)"><mat-icon>edit</mat-icon></button>
+                      <button mat-icon-button matTooltip="افزودن زیر گروه" matTooltipClass="example-tooltip-red" matTooltipPosition="left" (click)="addNewItem(node)"><mat-icon>add</mat-icon></button>
+
+
+                      <button mat-icon-button matTooltip="تخصیص تست به گروه" matTooltipClass="example-tooltip-red" matTooltipPosition="left" (click)="groupTestAssignment(node)"><mat-icon>assignment</mat-icon></button>
+                      <button mat-icon-button matTooltip="به روزرسانی نرم افزار گروه" matTooltipClass="example-tooltip-red" matTooltipPosition="left" (click)="groupUpdateAssignment(node)"><mat-icon>update</mat-icon></button>
+                    </div>
+
+                    <div [hidden]="!node.editing">
+                      <button mat-icon-button disabled></button>
+                      <mat-form-field>
+                        <input matInput #itemValue2 placeholder="New item..." [value]="node.item">
+                      </mat-form-field>
+                      <button mat-icon-button matTooltip="ذخیره" matTooltipClass="example-tooltip-red" matTooltipPosition="left" (click)="saveNode(node, itemValue2.value)"><mat-icon>save</mat-icon></button>
+                      <button mat-icon-button matTooltip="انصراف" matTooltipClass="example-tooltip-red" matTooltipPosition="left" (click)="cancelEditNode(node)"><mat-icon>cancel</mat-icon></button>
+                    </div>
+                  </mat-tree-node>
+                </mat-tree>
+
+              </div><!-- /.box-body -->
+              <div class="overlay" *ngIf="showLoading">
+                <i class="fa fa-refresh fa-spin"></i>
+              </div>
+            </div><!-- /.box -->
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div>
+    </section><!-- /.content -->
+  </div><!-- /.content-wrapper -->

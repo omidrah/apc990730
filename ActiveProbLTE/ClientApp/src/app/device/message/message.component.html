@@ -1,0 +1,142 @@
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+  <!-- Content Header (Page header) -->
+  <section class="content-header">
+    <h1>
+      <span translate>DeviceMessages</span>
+      <small>{{ MachineName }}</small>
+    </h1>
+    <ol class="breadcrumb">
+      <li><a [routerLink]="['']" translate><i class="fa fa-dashboard"></i>Home</a></li>
+      <li><a [routerLink]="['/machine']" translate>DeviceList</a></li>
+      <li class="active"><span translate>DeviceMessages</span> {{ MachineName }}</li>
+    </ol>
+
+  </section>
+
+  <!--<app-breadcrumb></app-breadcrumb>-->
+  <!-- Main content -->
+  <section class="content">
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="box box-primary">
+          <div class="box-body">
+
+            <div class="row">
+              <div class="col-md-12">
+                <mat-form-field>
+                  <mat-label translate>Search</mat-label>
+                  <input matInput (keyup)="applyFilter($event)" #input>
+                </mat-form-field>
+
+                <a class="btn btn-success btn-sm" style="margin:0 5px;" (click)="getMessage()"><span translate>ReloadData</span><i class="fa fa-refresh"></i></a>
+
+                <a class="btn btn-success btn-lg rowEndAligne" [routerLink]="['/machine/Message/Create/' , this.machinId , this.MachineName ]"><span translate>CreateNewMessage</span><i class="fa fa-plus"></i></a>
+              </div>
+            </div>
+
+            <div class="mat-table-container mat-elevation-z8">
+              <table mat-table [dataSource]="dataSource" matSort class="table table-hover table-striped text-nowrap">
+
+                <!--- Note that these columns can be defined in any order.
+  The actual rendered columns are set as a property on the row definition" -->
+
+                <ng-container matColumnDef="index">
+                  <th mat-header-cell *matHeaderCellDef><span translate>Row</span></th>
+                  <td mat-cell *matCellDef="let element;let i = index;">
+                    {{this.paginator.pageIndex == 0 ? i + 1 : 1 + i + this.paginator.pageIndex * this.paginator.pageSize}}
+                  </td>
+                </ng-container>
+
+
+                <ng-container matColumnDef="Modem">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header><span translate>Type</span></th>
+                  <td mat-cell *matCellDef="let element">
+                    {{ (element.modem == 0 ? 'Modem' : 'Test' ) | translate }}
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="Sim">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header><span translate>SimcardNo</span></th>
+                  <td mat-cell *matCellDef="let element"> {{element.sim}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="Iccid">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header><span translate>ICCID</span></th>
+                  <td mat-cell *matCellDef="let element"> {{element.iccid}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="msg">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header><span translate>MessageType</span></th>
+                  <td mat-cell *matCellDef="let element"> {{(element.msg == 'USS' ? 'USSD' : element.msg )}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="SendMessage">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header><span translate>Send</span></th>
+                  <td mat-cell *matCellDef="let element" class="numberOnly"> {{element.sendMessage | slice:0:20}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="ReceiveMessage">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header><span translate>Receive</span></th>
+                  <td mat-cell *matCellDef="let element" matTooltip="{{ element.receiveMessage === 'NoAnswer' || element.receiveMessage === 'Error'|| element.receiveMessage === 'TestInProgress' ? translate.instant(element.receiveMessage) :  messageDecoding(element.receiveMessage,element.msg)}}" matTooltipClass="example-tooltip-red example-tooltip-size" matTooltipPosition="below">{{element.receiveMessage === 'NoAnswer' || element.receiveMessage === 'Error'|| element.receiveMessage === 'TestInProgress' ? translate.instant(element.receiveMessage) :  messageDecoding(element.receiveMessage,element.msg) | slice:0:20   }} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="DateFromDevice">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header><span translate>Date</span></th>
+                  <td mat-cell *matCellDef="let element"> {{langService.convertDate(element.dateFromDevice)}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="Status">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header><span translate>Status</span></th>
+                  <td mat-cell *matCellDef="let element">
+                    {{  (element.status == 3 ?   'Send' :  (element.status == 0 ? 'NotSend' :  (element.status == 1 || element.status == 2 ? 'Received' :  '' ) ) )  | translate }}
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="actions" sticky [stickyEnd]="true">
+                  <th mat-header-cell *matHeaderCellDef></th>
+                  <td mat-cell *matCellDef="let element">
+                    <a class="btn btn-default gridbutton" [class.disabled]="element.status != 0" [routerLink]="['/machine/Message/Edit/' , this.machinId , this.MachineName , element.id ]" title="{{ 'Edit' | translate }}"><i class="fa fa-edit"></i></a>
+                    <a class="btn btn-default gridbutton" [class.disabled]="element.status != 0" (click)="deleteConfirm(element.id)" title="{{ 'Delete' | translate }}" data-toggle="modal" data-target="#modal-default"><i class="fa fa-trash"></i></a>
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+              </table>
+              <mat-paginator [pageSize]="10" [pageSizeOptions]="[10 , 25 , 50 , 100]" [showFirstLastButtons]="true"></mat-paginator>
+
+            </div>
+
+          </div><!-- /.box-body -->
+          <div class="overlay" *ngIf="showloader ">
+            <i class="fa fa-refresh fa-spin"></i>
+          </div>
+        </div><!-- /.box -->
+      </div><!-- /.col -->
+    </div><!-- /.row -->
+
+    <div class="modal fade" id="modal-default" data-backdrop="static" style="display: none;">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">×</span>
+            </button>
+            <h4 class="modal-title" translate>Noticeable</h4>
+          </div>
+          <div class="modal-body">
+            <p translate>DeleteMessageConfirmMessage</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default pull-left" data-dismiss="modal" translate>No</button>
+            <button type="button" class="btn btn-primary" (click)="doDelete()" translate>Yse</button>
+          </div>
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
+
+  </section><!-- /.content -->
+</div><!-- /.content-wrapper -->

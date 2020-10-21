@@ -1,0 +1,532 @@
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+  <!-- Content Header (Page header) -->
+
+  <section class="content-header">
+    <h1>
+      {{breadcroumb | translate}}
+      <small>{{testTitle }}</small>
+    </h1>
+
+    <ol class="breadcrumb">
+      <li><a [routerLink]="['']" translate><i class="fa fa-dashboard"></i>Home</a></li>
+      <li><a [routerLink]="['/Test']"><span translate>TestList</span></a></li>
+      <li class="active">{{breadcroumb | translate}} {{ testTitle }}</li>
+    </ol>
+  </section>
+
+  <!--<app-breadcrumb></app-breadcrumb>-->
+  <!-- Main content -->
+  <section class="content">
+
+    <div class="row">
+
+      <div class="col-md-12">
+        <!-- Horizontal Form -->
+        <div class="box box-primary">
+
+
+          <form class="form-horizontal" [formGroup]="definedTestForm" (ngSubmit)="save()" #formDir="ngForm" novalidate>
+            <div class="box-body">
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="inputName" class="col-sm-3 control-label">
+                      <span class="text-red">* </span>
+                      <span translate>Title</span>:
+                    </label>
+                    <div class="col-sm-9">
+                      <input class="form-control" placeholder="Title" type="text" formControlName="title" required>
+                      <span class="text-danger col-md-12" *ngIf="title?.invalid &&  title.errors.required  && ( title.touched || formDir.submitted)" translate>TitleIsRequired</span>
+                      <span *ngIf="title?.invalid && title.errors.titleExist   && ( title.touched || formDir.submitted)" class="text-danger col-md-12" translate>TitleIsDuplicate</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="inputSerialNo" class="col-sm-3 control-label"><span translate>Layer3Messages</span>:</label>
+                    <div class="col-sm-9">
+                      <div class="checkbox">
+                        <label>
+                          <input type="checkbox" formControlName="layer3Messages">
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="inputName" class="col-sm-3 control-label">
+                      <span class="text-red">* </span>
+                      <span translate>RepeatType</span>:
+                    </label>
+                    <div class="col-sm-9">
+                      <select class="form-control" data-val="true" formControlName="repeatTypeId" [(ngModel)]="repeatTypeOptionValue">
+                        <option value=-1 translate>SelectRepeatTypePlease</option>
+                        <option *ngFor="let type of repeatTypeList" [ngValue]=type.id>
+                          {{type.title}}
+                        </option>
+                      </select>
+                      <span class="text-danger col-md-12" *ngIf="repeatTypeId?.invalid   && ( repeatTypeId.touched || formDir.submitted)" translate>RepeatTypeIsRequired</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-6" *ngIf="repeatTypeOptionValue==2">
+                  <div class="form-group">
+                    <label for="inputName" class="col-sm-3 control-label">
+                      <span class="text-red">* </span>
+                      <span translate>RepeatTime</span>:
+                    </label>
+                    <div class="col-sm-9">
+                      <input class="form-control" type="number" formControlName="repeatTime">
+                      <span class="text-danger col-md-12" *ngIf="repeatTime?.invalid   && ( repeatTime.touched || formDir.submitted)" translate>RepeatTimeIsRequired</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-6" *ngIf="repeatTypeOptionValue==3">
+                  <div class="form-group">
+                    <label for="inputSerialNo" class="col-sm-3 control-label"><span translate>RepeatCount</span>:</label>
+                    <div class="col-sm-9">
+                      <input class="form-control" type="number" formControlName="repeatCount">
+                      <span class="text-danger col-md-12" *ngIf="repeatCount?.invalid   && ( repeatCount.touched || formDir.submitted)" translate>RepeatCountIsRequired</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="inputName" class="col-sm-3 control-label">
+                      <span class="text-red">* </span>
+                      <span translate>TestTypeTitle</span>:
+                    </label>
+                    <div class="col-sm-9">
+                      <select class="form-control" data-val="true" formControlName="testTypeId"
+                              [(ngModel)]="testTypeIdOptionValue" (change)='onTestTypeOptionsSelected($event)'>
+                        <option value="0" translate>SelectTestPlease</option>
+                        <option *ngFor="let type of testTypeList" [ngValue]=type.id>
+                          {{type.title}}
+                        </option>
+                      </select>
+                      <span class="text-danger col-md-12" *ngIf="testTypeId?.invalid   && ( testTypeId.touched || formDir.submitted)" translate>TestTypeIsRequired</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="inputSerialNo" class="col-sm-3 control-label">
+                      <span class="text-red">* </span>
+                      <span translate>MeasurementIntervalLable</span>:
+                    </label>
+                    <div class="col-sm-9">
+                      <input class="form-control" type="number" formControlName="measurementInterval">
+                      <span class="text-danger col-md-12" *ngIf="measurementInterval?.invalid   && ( measurementInterval.touched || measurementInterval.dirty || formDir.submitted)" translate>MeasurementIntervalIsInvalid</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-6" *ngIf="testTypeIdOptionValue==1 || testTypeIdOptionValue==2 ">
+                  <div class="form-group">
+                    <label for="inputName" class="col-sm-3 control-label">
+                      <span class="text-red">* </span>
+                      <span translate>UsualCallDuration</span>:
+                    </label>
+                    <div class="col-sm-9">
+                      <input class="form-control" type="number" formControlName="usualCallDuration">
+                      <span class="text-danger col-md-12" *ngIf="usualCallDuration.invalid   && ( usualCallDuration.touched || usualCallDuration.dirty  || formDir.submitted)" translate>UsualCallDurationIsInvalid</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-6" *ngIf="testTypeIdOptionValue==1 || testTypeIdOptionValue==2">
+                  <div class="form-group">
+                    <label for="inputSerialNo" class="col-sm-3 control-label">
+                      <span class="text-red">* </span>
+                      <span translate>UsualCallWaitTime</span>:
+                    </label>
+                    <div class="col-sm-9">
+                      <input class="form-control" type="number" formControlName="usualCallWaitTime">
+                      <span class="text-danger col-md-12" *ngIf="usualCallWaitTime.invalid   && ( usualCallWaitTime.touched || usualCallWaitTime.dirty  || formDir.submitted)" translate>UsualCallWaitTimeIsInvalid</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-6" *ngIf="testTypeIdOptionValue==4">
+                  <div class="form-group">
+                    <label for="inputName" class="col-sm-3 control-label">
+                      <span class="text-red">* </span>
+                      <span translate>TestDataProtocol</span>:
+                    </label>
+                    <div class="col-sm-9">
+                      <select class="form-control" type="text" data-val="true" formControlName="testDataId"
+                              (change)='onOptionsSelected($event)'>
+                        <option value=-1 translate>SelectTestDataProtocolPlease</option>
+                        <option *ngFor="let type of testDataList" [(ngValue)]="type.id">
+                          {{type.title}}
+                        </option>
+                      </select>
+                      <span class="text-danger col-md-12" *ngIf="testDataId?.invalid   && ( testDataId.touched || formDir.submitted)" translate>TestDataProtocolIsRequired</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-6" *ngIf="(testTypeIdOptionValue==2) || (testTypeIdOptionValue==4 && (testDataIdOptionValue == 1 || testDataIdOptionValue == 2) )">
+                  <div class="form-group">
+                    <label for="inputSerialNo" class="col-sm-3 control-label">
+                      <span class="text-red">* </span>
+                      <span translate>TestDataType</span>:
+                    </label>
+                    <div class="col-sm-9">
+                      <select class="form-control" data-val="true" formControlName="testDataTypeId" (change)='onDirectionSelected($event)'>
+                        <option value=0 translate>SelectTestDataTypePlease</option>
+                        <option *ngFor="let type of testDataTypeList" [ngValue]=type.id>
+                          {{type.title}}
+                        </option>
+                      </select>
+                      <span class="text-danger col-md-12" *ngIf="testDataTypeId?.invalid   && ( testDataTypeId.touched || formDir.submitted)" translate>TestDataTypeIsRequired</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-6" *ngIf="testTypeIdOptionValue==4 || testTypeIdOptionValue==2">
+                  <div class="form-group">
+                    <label for="inputName" class="col-sm-3 control-label">
+                      <span class="text-red">* </span>
+                      <span translate>TestDataServer</span>:
+                    </label>
+                    <div class="col-sm-9">
+                      <input class="form-control" type="url" formControlName="testDataServer">
+                      <span class="text-danger col-md-12" *ngIf=" testDataServer?.invalid   && ( testDataServer.touched  || testDataServer.dirty || formDir.submitted) " translate>TestDataServerIsRequired</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-6" *ngIf="testTypeIdOptionValue==4 && testDataIdOptionValue == 1">
+                  <div class="form-group">
+                    <label for="inputSerialNo" class="col-sm-3 control-label">
+                      <span class="text-red">* </span>
+                      <span translate>TestDataUserName</span>:
+                    </label>
+                    <div class="col-sm-9">
+                      <input class="form-control" type="text" formControlName="testDataUserName">
+                      <span class="text-danger col-md-12" *ngIf="testDataUserName?.invalid   && ( testDataUserName.touched  || testDataUserName.dirty || formDir.submitted)" translate>TestDataUserNameIsRequired</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-6" *ngIf="testTypeIdOptionValue==4 && testDataIdOptionValue == 4">
+                  <div class="form-group">
+                    <label for="inputName" class="col-sm-3 control-label">
+                      <span class="text-red">* </span>
+                      <span translate>TraceRouteHubCount</span>:
+                    </label>
+                    <div class="col-sm-9">
+                      <input class="form-control" type="number" formControlName="traceRouteHubCount">
+                      <span class="text-danger col-md-12" *ngIf="TraceRouteHubCount?.invalid   && ( TraceRouteHubCount.touched  || TraceRouteHubCount.dirty || formDir.submitted)" translate>TraceRouteHubIsRequired</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-6" *ngIf="testTypeIdOptionValue==4 && testDataIdOptionValue == 3">
+                  <div class="form-group">
+                    <label for="inputName" class="col-sm-3 control-label">
+                      <span class="text-red">* </span>
+                      <span translate>PingCount</span>:
+                    </label>
+                    <div class="col-sm-9">
+                      <input class="form-control" type="number" formControlName="numberOfPings">
+                      <span class="text-danger col-md-12" *ngIf="numberOfPings?.invalid   && ( numberOfPings.touched  || numberOfPings.dirty || formDir.submitted)" translate>NumberOfPingsIsInvalid</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-6" *ngIf="testTypeIdOptionValue==4 && testDataIdOptionValue == 3">
+                  <div class="form-group">
+                    <label for="inputSerialNo" class="col-sm-3 control-label">
+                      <span class="text-red">* </span>
+                      <span translate>PacketSize</span>:
+                    </label>
+                    <div class="col-sm-9">
+                      <input class="form-control" type="number" formControlName="packetSize">
+                      <span class="text-danger col-md-12" *ngIf="packetSize?.invalid   && ( packetSize.touched  || packetSize.dirty || formDir.submitted)" translate>PacketSizeIsInvalid</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-6" *ngIf="testTypeIdOptionValue==4 && testDataIdOptionValue == 3">
+                  <div class="form-group">
+                    <label for="inputName" class="col-sm-3 control-label">
+                      <span class="text-red">* </span>
+                      <span translate>IntervalTime</span>:
+                    </label>
+                    <div class="col-sm-9">
+                      <input class="form-control" type="number" formControlName="internalTime">
+                      <span class="text-danger col-md-12" *ngIf="internalTime?.invalid   && ( internalTime.touched  || internalTime.dirty || formDir.submitted)" translate>InternalTimeIsInvalid</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-6" *ngIf="testTypeIdOptionValue==4 && testDataIdOptionValue == 3">
+                  <div class="form-group">
+                    <label for="inputSerialNo" class="col-sm-3 control-label">
+                      <span class="text-red">* </span>
+                      <span translate>ResponseWaitTime</span>:
+                    </label>
+                    <div class="col-sm-9">
+                      <input class="form-control" type="number" formControlName="responseWaitTime">
+                      <span class="text-danger col-md-12" *ngIf="responseWaitTime?.invalid   && ( responseWaitTime.touched  || responseWaitTime.dirty || formDir.submitted)" translate>ResponseWaitTimeIsInvalid</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-6" *ngIf="testTypeIdOptionValue==4 && testDataIdOptionValue == 3">
+                  <div class="form-group">
+                    <label for="inputName" class="col-sm-3 control-label">
+                      <span class="text-red">* </span>
+                      <span translate>TTL</span>:
+                    </label>
+                    <div class="col-sm-9">
+                      <input class="form-control" type="number" formControlName="ttl">
+                      <span class="text-danger col-md-12" *ngIf="ttl?.invalid   && ( ttl.touched || ttl.dirty|| formDir.submitted)" translate>TTLIsInvalid</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-6" *ngIf="testTypeIdOptionValue==4 && testDataIdOptionValue == 3">
+                  <div class="form-group">
+                    <label for="inputSerialNo" class="col-sm-3 control-label">
+                      <span class="text-red">* </span>
+                      <span translate>IpType</span>:
+                    </label>
+                    <div class="col-sm-9">
+                      <select class="form-control" data-val="true" formControlName="ipTypeId" [(ngModel)]="iPTypeIdOptionValue">
+                        <option value=-1 translate>SelectIpTypePlease</option>
+                        <option *ngFor="let type of iPTypeList" [ngValue]=type.id>
+                          {{type.title}}
+                        </option>
+                      </select>
+                      <span class="text-danger col-md-12" *ngIf="ipTypeId?.invalid   && ( ipTypeId.touched || formDir.submitted)" translate>IpTypeIsRequired</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-6" *ngIf="testTypeIdOptionValue==4 && testDataIdOptionValue == 1">
+                  <div class="form-group">
+                    <label for="inputName" class="col-sm-3 control-label">
+                      <span class="text-red">* </span>
+                      <span translate>TestDataPassword</span>:
+                    </label>
+                    <div class="col-sm-9">
+                      <input class="form-control" type="text" formControlName="testDataPassword">
+                      <span class="text-danger col-md-12" *ngIf="testDataPassword?.invalid   && ( testDataPassword.touched  || testDataPassword.dirty || formDir.submitted)" translate>TestDataPasswordIsRequired</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-6" *ngIf="testTypeIdOptionValue==2 || (testTypeIdOptionValue==4 && (testDataIdOptionValue == 1 || testDataIdOptionValue == 2 ))">
+                  <div class="form-group">
+                    <label for="inputSerialNo" class="col-sm-3 control-label">
+                      <span translate>FileAddress</span>:
+                    </label>
+                    <div class="col-sm-9">
+                      <input class="form-control" type="text" formControlName="testDataDownloadFileAddress">
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-6" *ngIf="testTypeIdOptionValue==4 && (testDataIdOptionValue == 1 || testDataIdOptionValue == 2) && testDataDirectionIdOptionValue == 2">
+                  <div class="form-group">
+                    <label for="inputName" class="col-sm-3 control-label">
+                      <span class="text-red">* </span>
+                      <span translate>TestDataUploadFileSize</span>:
+                    </label>
+                    <div class="col-sm-9">
+                      <input class="form-control" type="number" formControlName="testDataUploadFileSize">
+                      <span class="text-danger col-md-12" *ngIf="testDataUploadFileSize?.invalid   && ( testDataUploadFileSize.touched || testDataUploadFileSize.dirty|| formDir.submitted)" translate>TestDataUploadFileSizeIsInvalid</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-6" *ngIf="testTypeIdOptionValue==5">
+                  <div class="form-group">
+                    <label for="inputSerialNo" class="col-sm-3 control-label">
+                      <span class="text-red">* </span>
+                      <span translate>OTTService</span>:
+                    </label>
+                    <div class="col-sm-9">
+                      <select class="form-control" data-val="true" formControlName="ottServiceId">
+                        <option value=0 translate>SelectOTTServicePlease</option>
+                        <option *ngFor="let type of oTTServiceList" [ngValue]=type.id>
+                          {{type.title}}
+                        </option>
+                      </select>
+                      <span class="text-danger col-md-12" *ngIf="ottServiceId?.invalid   && ( ottServiceId.touched || formDir.submitted)" translate>OTTServiceIsRequired</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="inputName" class="col-sm-3 control-label">
+                      <span class="text-red">* </span>
+                      <span translate>NetworkTitle</span>:
+                    </label>
+                    <div class="col-sm-9">
+                      <select class="form-control" data-val="true" formControlName="networkId">
+                        <option value=0 translate>SelectNetworkPlease</option>
+                        <option *ngFor="let type of networkList" [ngValue]=type.id>
+                          {{type.title}}
+                        </option>
+                      </select>
+                      <span class="text-danger col-md-12" *ngIf="networkId?.invalid   && ( networkId.touched || formDir.submitted)" translate>NetworkIsRequired</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-6" *ngIf="testTypeIdOptionValue==1  || testTypeIdOptionValue==2">
+                  <div class="form-group">
+                    <label for="inputSerialNo" class="col-sm-3 control-label">
+                      <span class="text-red">* </span>
+                      <span translate>UsualCallNumber</span>:                      
+                    </label>
+                    <div class="col-sm-9">
+                      <input class="form-control" type="number" formControlName="usualCallNumber">
+                      <span class="text-danger col-md-12" *ngIf="usualCallNumber?.invalid   && ( usualCallNumber.touched || formDir.submitted)" translate>UsualCallNumberIsInvalid</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-6" *ngIf="testTypeIdOptionValue==5">
+                  <div class="form-group">
+                    <label for="inputName" class="col-sm-3 control-label">
+                      <span class="text-red">* </span>
+                      <span translate>OTTServiceType</span>:
+                    </label>
+                    <div class="col-sm-9">
+                      <select class="form-control" data-val="true" formControlName="ottServiceTestId">
+                        <option value=0  translate>SelectOTTServiceTestPlease</option>
+                        <option *ngFor="let type of oTTServiceTestList" [ngValue]=type.id>
+                          {{type.title}}
+                        </option>
+                      </select>
+                      <span class="text-danger col-md-12" *ngIf="ottServiceTestId?.invalid   && ( ottServiceTestId.touched || formDir.submitted)" translate>OTTServiceIsRequired</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="inputSerialNo" class="col-sm-3 control-label">
+                      <span translate>BandTitle</span>:
+                    </label>
+                    <div class="col-sm-9">
+                      <select class="form-control" data-val="true" formControlName="bandId">
+                        <option *ngFor="let type of bandList" [ngValue]=type.id>
+                          {{type.title}}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="inputName" class="col-sm-3 control-label">
+                      <span translate>SaveLogFile</span>:
+                    </label>
+                    <div class="col-sm-9">
+                      <div class="checkbox">
+                        <label>
+                          <input type="checkbox" formControlName="saveLogFile" [(ngModel)]="saveLogFileCheckValue">
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-6" *ngIf="saveLogFileCheckValue">
+                  <div class="form-group">
+                    <label for="inputName" class="col-sm-3 control-label">
+                      <span class="text-red">* </span>
+                      <span translate>LogFilePartitionType</span>:
+                    </label>
+                    <div class="col-sm-9">
+                      <select class="form-control" data-val="true" formControlName="logFilePartitionTypeId" [(ngModel)]="logFilePartitionTypeCheckValue">
+                        <option value=0 translate>SelectLogFilePartitionTypePlease</option>
+                        <option *ngFor="let type of logFilePartitionTypeList" [ngValue]=type.id>
+                          {{type.title}}
+                        </option>
+                      </select>
+                      <span class="text-danger col-md-12" *ngIf="logFilePartitionTypeId?.invalid   && ( logFilePartitionTypeId.touched || formDir.submitted)" translate>LogFilePartitionTypeIsRequired</span>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+              <div class="row">
+                <div class="col-lg-6" *ngIf="logFilePartitionTypeCheckValue==1 && saveLogFileCheckValue">
+                  <div class="form-group">
+                    <label for="inputSerialNo" class="col-sm-3 control-label">
+                      <span class="text-red">* </span>
+                      <span translate>LogFilePartitionTime</span>:
+                    </label>
+                    <div class="col-sm-9">
+                      <input class="form-control" type="number" formControlName="logFilePartitionTime">
+                      <span class="text-danger col-md-12" *ngIf="logFilePartitionTime?.invalid   && ( logFilePartitionTime.touched  || logFilePartitionTime.dirty || formDir.submitted)" translate>LogFilePartitionTimeIsRequired</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-6" *ngIf="logFilePartitionTypeCheckValue==2 && saveLogFileCheckValue">
+                  <div class="form-group">
+                    <label for="inputSerialNo" class="col-sm-3 control-label">
+                      <span class="text-red">* </span>
+                      <span translate>TestDataUploadFileSize</span>:
+                    </label>
+                    <div class="col-sm-9">
+                      <input class="form-control" type="number" formControlName="logFilePartitionSize">
+                      <span class="text-danger col-md-12" *ngIf="logFilePartitionSize?.invalid   && ( logFilePartitionSize.touched || logFilePartitionSize.dirty || formDir.submitted)" translate>TestDataUploadFileSizeIsRequired</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-6" *ngIf="saveLogFileCheckValue">
+                  <div class="form-group">
+                    <label for="inputName" class="col-sm-3 control-label">
+                      <span class="text-red">* </span>
+                      <span translate>LogFileHoldTime</span>:
+                    </label>
+                    <div class="col-sm-9">
+                      <input class="form-control" type="number" formControlName="logFileHoldTime">
+                      <span class="text-danger col-md-12" *ngIf="logFileHoldTime?.invalid   && ( logFileHoldTime.touched || logFileHoldTime.dirty || formDir.submitted)" translate>LogFileHoldTimeIsRequired</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div><!-- /.box-body -->
+            <div class="box-footer">
+              <button class="btn btn-danger rowEndAligne" (click)="cancel()" translate>Cancel</button>
+              <button type="submit" class="btn btn-primary rowEndAligne" [attr.disabled]="Editable == true? true :null" translate>Save</button>
+            </div><!-- /.box-footer -->
+          </form>
+          <div class="overlay" *ngIf="showloader">
+            <i class="fa fa-refresh fa-spin"></i>
+          </div>
+        </div><!-- /.box -->
+
+      </div>
+    </div>
+
+  </section><!-- /.content -->
+</div><!-- /.content-wrapper -->

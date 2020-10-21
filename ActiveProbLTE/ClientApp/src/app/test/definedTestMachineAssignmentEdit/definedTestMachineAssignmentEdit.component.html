@@ -1,0 +1,170 @@
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+  <!-- Content Header (Page header) -->
+  <section class="content-header">
+    <h1>
+      {{breadcroumb | translate}}
+      <small>{{machineTitle}}</small>
+    </h1>
+    <ol class="breadcrumb">
+      <li><a [routerLink]="['']" translate><i class="fa fa-dashboard"></i>Home</a></li>
+      <li><a [routerLink]="['/machine']" translate>DeviceList</a></li>
+      <li><a [routerLink]="['/Test/Assignment/Machine/' , machineId , machineTitle]"><span translate>DeviceTestList</span> {{machineTitle}}</a></li>
+      <li class="active">{{breadcroumb | translate}} {{machineTitle}}</li>
+    </ol>
+  </section>
+  <!--<app-breadcrumb></app-breadcrumb>-->
+  <!-- Main content -->
+  <section class="content">
+
+    <!--------------------------
+  | Your Page Content Here |
+  -------------------------->
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="box box-primary">
+          <!--<div class="box-header">
+          <i class="fa fa-simplybuilt" style="margin-left:10px;"></i>
+          <h3 class="box-title ">فهرست دستگاه ها</h3>
+        </div>-->
+          <!-- /.box-header -->
+          <form class="form-horizontal" [formGroup]="definedTestMachineForm" (ngSubmit)="save(false)" #formDir="ngForm" novalidate>
+            <div class="box-body">
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="inputName" class="col-sm-3 control-label">
+                      <span class="text-red">* </span>
+                      <span translate>Test</span>:
+                    </label>
+                    <div class="col-sm-9">
+                      <select class="form-control" data-val="true" formControlName="definedTestId">
+                        <option value=0 translate>SelectTestPlease</option>
+                        <option *ngFor="let test of definedTestList" [ngValue]=test.id>
+                          {{test.title}}
+                        </option>
+                      </select>
+                      <span class="text-danger col-md-12" *ngIf="(definedTestId?.invalid) && (definedTestId.touched || formDir.submitted)" translate>TestIsRequired</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="inputSerialNo" class="col-sm-3 control-label">
+                      <span class="text-red">* </span>
+                      <span translate>Activation</span>:
+                    </label>
+                    <div class="col-sm-9">
+                      <div class="checkbox">
+                        <label>
+                          <input type="checkbox" formControlName="isActive">
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="inputName" class="col-sm-3 control-label">
+                      <span class="text-red">* </span>
+                      <span translate>StartDate</span>:
+                    </label>
+                    <div class="col-sm-9">
+                      <div class="row flex-container">
+                        <div class="col-sm-5">
+                          <input type="time" class="form-control" formControlName="beginDateTime">
+                          <span class="text-danger col-md-12" *ngIf="f.beginDateTime?.invalid && (f.beginDateTime.touched || formDir.submitted)" translate>BeginTimeIsRequired</span>
+                        </div>
+                        <div class="col-sm-7">
+                          <input [matDatepicker]="beginDate" type="text" class="form-control" formControlName="beginDate" (click)="beginDate.open()">
+                          <mat-datepicker #beginDate></mat-datepicker>
+                          <span class="text-danger col-md-12" *ngIf="f.beginDate?.invalid && (f.beginDate.touched || formDir.submitted)" translate>BeginDateIsRequired</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="inputSerialNo" class="col-sm-3 control-label">
+                      <span class="text-red">* </span>
+                      <span translate>EndDate</span>:
+                    </label>
+                    <div class="col-sm-9">
+                      <div class="row flex-container">
+                        <div class="col-sm-5">
+                          <input type="time" class="form-control" formControlName="endDateTime">
+                          <span class="text-danger col-md-12" *ngIf="f.endDateTime?.invalid && (f.endDateTime.touched || formDir.submitted)" translate>EndTimeIsRequired</span>
+                        </div>
+                        <div class="col-sm-7">
+                          <input [matDatepicker]="endDate" type="text" class="form-control" formControlName="endDate" (click)="endDate.open()">
+                          <mat-datepicker #endDate></mat-datepicker>
+                          <span class="text-danger col-md-12" *ngIf="f.endDate?.invalid && (f.endDate.touched || formDir.submitted)" translate>EndDateIsRequired</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="inputName" class="col-sm-3 control-label">
+                      <span class="text-red">* </span>
+                      <span translate>SimcardNo</span>:
+                    </label>
+                    <div class="col-sm-9">
+                      <select class="form-control" data-val="true" formControlName="sim">
+                        <option value=0 translate>SelectSimcardNoPlease</option>
+                        <option value=1> 1 </option>
+                        <option value=2> 2 </option>
+                        <option value=3> 3 </option>
+                        <option value=4> 4 </option>
+                      </select>
+                      <span class="text-danger col-md-12" *ngIf="sim?.invalid && (sim.touched || formDir.submitted)" translate>SimcardNoIsRequired</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div><!-- /.box-body -->
+            <div class="box-footer">
+
+              <button class="btn btn-danger rowEndAligne" (click)="cancel()" translate>Cancel</button>
+              <button type="submit" class="btn btn-primary rowEndAligne" translate>Save</button>
+            </div><!-- /.box-footer -->
+          </form>
+          <div class="overlay" *ngIf="showloader">
+            <i class="fa fa-refresh fa-spin"></i>
+          </div>
+        </div><!-- /.box -->
+      </div><!-- /.col -->
+    </div><!-- /.row -->
+
+    <div class="modal fade" id="modal-default" data-backdrop="static" style="display: none;">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">×</span>
+            </button>
+            <h4 class="modal-title" translate>Noticeable</h4>
+          </div>
+          <div class="modal-body">
+            <p>{{ReplaceTestConfirmMessage}}</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default pull-left" data-dismiss="modal" translate>Cancel</button>
+            <button type="button" class="btn btn-primary" (click)="AcceptConfirm()" translate>Ok</button>
+          </div>
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
+
+  </section><!-- /.content -->
+</div><!-- /.content-wrapper -->

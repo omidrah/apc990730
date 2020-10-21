@@ -1,0 +1,253 @@
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+  <!-- Content Header (Page header) -->
+  <section class="content-header">
+    <h1>
+      <span translate>DeviceList</span>
+    </h1>
+    <ol class="breadcrumb">
+      <li><a [routerLink]="['']" translate><i class="fa fa-dashboard"></i>Home</a></li>
+      <li class="active" translate>DeviceList</li>
+    </ol>
+
+  </section>
+
+  <!--<app-breadcrumb></app-breadcrumb>-->
+  <!-- Main content -->
+  <section class="content">
+
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="box box-primary">
+          <div class="box-body">
+            <div class="row">
+              <div class="col-md-12">
+                <mat-form-field>
+                  <mat-label translate>Search</mat-label>
+                  <input matInput (keyup)="applyFilter($event)" #input>
+                </mat-form-field>
+                <a class="btn btn-success btn-lg rowEndAligne" [routerLink]="['/machine/Create']"  *ngIf="config && config.properties && config.properties && config.properties.createDevice"><span translate>CreateDevice</span><i class="fa fa-plus"></i></a>
+              </div>
+            </div>
+
+            <div class="mat-table-container mat-elevation-z8">
+              <table mat-table [dataSource]="dataSource" matSort #sort1="matSort"  class="table table-hover table-striped text-nowrap" [hidden]="!(config && config.properties && config.properties.machineTable === 'ActiveProb' )">
+
+                <!--- Note that these columns can be defined in any order.
+      The actual rendered columns are set as a property on the row definition" -->
+
+                <ng-container matColumnDef="index">
+                  <th mat-header-cell *matHeaderCellDef><span translate>Row</span></th>
+                  <td mat-cell *matCellDef="let element;let i = index;">
+                    {{this.paginator.pageIndex == 0 ? i + 1 : 1 + i + this.paginator.pageIndex * this.paginator.pageSize}}
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="name">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header><span translate>Name</span></th>
+                  <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="identifier">
+                  <th mat-header-cell *matHeaderCellDef><span translate>Identifier</span></th>
+                  <td mat-cell *matCellDef="let element"> {{element.identifier}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="machineTypeTitle">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header><span translate>Type</span></th>
+                  <td mat-cell *matCellDef="let element"> {{element.machineTypeTitle}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="machineGroupTitle">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header><span translate>MachineGroupTitle</span></th>
+                  <td mat-cell *matCellDef="let element"> {{element.machineGroupTitle}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="Location">
+                  <th mat-header-cell *matHeaderCellDef><span translate>Position</span></th>
+                  <td mat-cell *matCellDef="let element"> {{element.latitude| number:'2.3'}} ,  {{element.longitude| number:'2.3'}}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="imeI1">
+                  <th mat-header-cell *matHeaderCellDef><span translate>IMEI1</span></th>
+                  <td mat-cell *matCellDef="let element"> {{element.imeI1}} </td>
+                </ng-container>
+
+                <!--<ng-container matColumnDef="imeI2" *ngIf="config && config.properties && config.properties && config.properties.imeI2">
+        <th mat-header-cell *matHeaderCellDef><span translate>IMEI2</span></th>
+        <td mat-cell *matCellDef="let element"> {{element.imeI2}} </td>
+      </ng-container>-->
+
+                <ng-container matColumnDef="imeI2">
+                  <th mat-header-cell *matHeaderCellDef><span translate>IMEI2</span></th>
+                  <td mat-cell *matCellDef="let element"> {{element.imeI2}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="version">
+                  <th mat-header-cell *matHeaderCellDef><span translate>Version</span></th>
+                  <td mat-cell *matCellDef="let element"> {{element.version}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="status">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header><span translate>ConnectionStatus</span></th>
+                  <td mat-cell *matCellDef="let element">
+                    <i title="{{ (element.status == true ? 'Connected' : 'Disconnected' ) | translate }}" class="fa fa-2x"
+                       [ngClass]="{'fa-minus-circle text-red': element.status==false , 'fa-check-circle text-green': element.status==true}">
+                    </i>
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="testStatus">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header><span translate>TestStatus</span></th>
+                  <td mat-cell *matCellDef="let element">
+                    <i title="{{ element.testStatus | translate }}" class="fa fa-2x"
+                       [ngClass]="element.testStatus== 'Waiting' ? 'fa-pause-circle text-yellow' :
+                       element.testStatus == 'Running' ? 'fa-play-circle text-blue' :
+                       element.testStatus == 'Overwritten' ? 'fa-refresh text-red' :
+                       element.testStatus == 'Finished' ? 'fa-check-circle text-green' :
+                       element.testStatus == 'NotReceivedByDevice' ? 'fa-minus-circle text-red' : 'fa-frown-o text-light-blue'">
+                    </i>
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="actions" sticky [stickyEnd]="true">
+                  <th mat-header-cell *matHeaderCellDef></th>
+                  <td mat-cell *matCellDef="let element">
+
+                    <a class="btn btn-default gridbutton" [routerLink]="['/machine/edit/' , element.id]" title="{{ 'Edit' | translate }}"><i class="fa fa-edit"></i></a>
+                    <a class="btn btn-default gridbutton" [class.disabled]="!element.deletable" (click)="deleteConfirm(element.id)" title="{{ 'Delete' | translate }}" data-toggle="modal" data-target="#modal-default"><i class="fa fa-trash"></i></a>
+                    <a class="btn btn-default gridbutton" [routerLink]="['/Test/Assignment/Machine/' , element.id , element.name]" title="{{ 'TestAssignment' | translate }}"><i class="fa fa-calendar-plus-o"></i></a>
+                    <a class="btn btn-default gridbutton" [routerLink]="['/machine/Version/' , element.id , element.name , element.imeI1]" title="{{ 'Update' | translate }}"><i class="fa fa-upload"></i></a>
+
+                    <a class="btn btn-default gridbutton" [routerLink]="['/machine/Message/' , element.id , element.name]" title="{{ 'Messages' | translate }}"><i class="fa fa-envelope"></i></a>
+
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+              </table>
+
+              <table mat-table [dataSource]="modemDataSource" matSort #sort2="matSort"  class="table table-hover table-striped text-nowrap" [hidden]="!(config && config.properties && config.properties.machineTable === 'Modem' )">
+
+                <!--- Note that these columns can be defined in any order.
+      The actual rendered columns are set as a property on the row definition" -->
+
+                <ng-container matColumnDef="index">
+                  <th mat-header-cell *matHeaderCellDef><span translate>Row</span></th>
+                  <td mat-cell *matCellDef="let element;let i = index;">
+                    {{this.paginator.pageIndex == 0 ? i + 1 : 1 + i + this.paginator.pageIndex * this.paginator.pageSize}}
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="name">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header><span translate>Name</span></th>
+                  <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="identifier">
+                  <th mat-header-cell *matHeaderCellDef><span translate>Identifier</span></th>
+                  <td mat-cell *matCellDef="let element"> {{element.identifier}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="machineTypeTitle">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header><span translate>Type</span></th>
+                  <td mat-cell *matCellDef="let element"> {{element.machineTypeTitle}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="machineGroupTitle">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header><span translate>MachineGroupTitle</span></th>
+                  <td mat-cell *matCellDef="let element"> {{element.machineGroupTitle}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="Location">
+                  <th mat-header-cell *matHeaderCellDef><span translate>Position</span></th>
+                  <td mat-cell *matCellDef="let element"> {{element.latitude| number:'2.3'}} ,  {{element.longitude| number:'2.3'}}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="imeI1">
+                  <th mat-header-cell *matHeaderCellDef><span translate>IMEI1</span></th>
+                  <td mat-cell *matCellDef="let element"> {{element.imeI1}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="imeI2" *ngIf="config && config.properties && config.properties && config.properties.imeI2">
+                  <th mat-header-cell *matHeaderCellDef><span translate>IMEI2</span></th>
+                  <td mat-cell *matCellDef="let element"> {{element.imeI2}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="iccid">
+                  <th mat-header-cell *matHeaderCellDef><span translate>ICCID</span></th>
+                  <td mat-cell *matCellDef="let element"> {{element.iccid}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="version">
+                  <th mat-header-cell *matHeaderCellDef><span translate>Version</span></th>
+                  <td mat-cell *matCellDef="let element"> {{element.version}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="status">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header><span translate>ConnectionStatus</span></th>
+                  <td mat-cell *matCellDef="let element">
+                    <i title="{{ (element.status == true ? 'Connected' : 'Disconnected' ) | translate }}" class="fa fa-2x"
+                       [ngClass]="{'fa-minus-square text-red': element.status==false , 'fa-check-square text-green': element.status==true}">
+                    </i>
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="lastConnectionTime">
+                  <th mat-header-cell *matHeaderCellDef><span translate>LastConnectionTime</span></th>
+                  <td mat-cell *matCellDef="let element"> {{langService.convertDate(element.lastConection)}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="actions" sticky [stickyEnd]="true">
+                  <th mat-header-cell *matHeaderCellDef></th>
+                  <td mat-cell *matCellDef="let element">
+
+                    <a class="btn btn-default gridbutton" [routerLink]="['/machine/edit/' , element.id]" title="{{ 'Edit' | translate }}"><i class="fa fa-edit"></i></a>
+                    <a class="btn btn-default gridbutton" [class.disabled]="!element.deletable" (click)="deleteConfirm(element.id)" title="{{ 'Delete' | translate }}" data-toggle="modal" data-target="#modal-default"><i class="fa fa-trash"></i></a>
+                    <a class="btn btn-default gridbutton" [routerLink]="['/machine/Version/' , element.id , element.name , element.imeI1]" title="{{ 'Update' | translate }}"><i class="fa fa-upload"></i></a>
+
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedModemColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedModemColumns;"></tr>
+              </table>
+
+              <mat-paginator [pageSize]="10" [pageSizeOptions]="[10 , 25 , 50 , 100]" [showFirstLastButtons]="true"></mat-paginator>
+            </div>
+          </div><!-- /.box-body -->
+          <div class="overlay" *ngIf="showloader ">
+            <i class="fa fa-refresh fa-spin"></i>
+          </div>
+        </div><!-- /.box -->
+      </div><!-- /.col -->
+    </div><!-- /.row -->
+
+
+    <div class="modal fade" id="modal-default" data-backdrop="static" style="display: none;">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">×</span>
+            </button>
+            <h4 class="modal-title" translate>Noticeable</h4>
+          </div>
+          <div class="modal-body">
+            <p translate>DeleteDeviceConfirmMessage</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default pull-left" data-dismiss="modal" translate>No</button>
+            <button type="button" class="btn btn-primary" (click)="doDelete()" translate>Yse</button>
+          </div>
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
+
+
+
+  </section><!-- /.content -->
+</div><!-- /.content-wrapper -->

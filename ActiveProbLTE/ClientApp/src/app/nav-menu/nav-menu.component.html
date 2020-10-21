@@ -1,0 +1,60 @@
+<header >
+  <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+    <div class="container" style="direction:rtl; width:100%; margin-left:0px; margin-right:0px; padding:-5px;">
+      <a class="btn btn-default" href="#" (click)="logout()">
+        <li class="fa fa-sign-out fa-2x" aria-hidden="true"
+             style="color:red; text-align:right; float:right;" title="Sign Out" ></li>
+      </a>
+      <a style="min-width:100px; text-align:right; float:right;">{{user.firstName}} {{user.lastName}}</a>
+        <button class="navbar-toggler"
+                type="button"
+                data-toggle="collapse"
+                data-target=".navbar-collapse"
+                aria-label="Toggle navigation"
+                [attr.aria-expanded]="isExpanded"
+                (click)="toggle()">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse "
+             [ngClass]="{ show: isExpanded }">
+          <ul class="navbar-nav flex-grow">
+            <li class="nav-item dropdown" [routerLinkActive]="['link-active']" [routerLinkActiveOptions]="{ exact: true }">
+              <a class="nav-link dropdown-toggle" id="navbardrop" data-toggle="dropdown">
+                Device Management
+              </a>
+              <div class="dropdown-menu">
+                <a class="dropdown-item" [routerLink]="['/machine']">Device List</a>
+                <a class="dropdown-item" [routerLink]="['machine/Group']">Device Group</a>
+                <a class="dropdown-item" [routerLink]="['/fetch-data']">Device Monitor</a>                
+              </div>
+            </li>
+            <li class="nav-item " [routerLinkActive]="['link-active']">
+              <a class="nav-link text-dark" [routerLink]="['/Test']">Test Management</a>
+            </li>
+
+            <li class="nav-item dropdown" [routerLinkActive]="['link-active']" [routerLinkActiveOptions]="{ exact: true }">
+              <a class="nav-link dropdown-toggle" id="navbardrop" data-toggle="dropdown">
+                Data Management
+              </a>
+              <div class="dropdown-menu">
+                <a class="dropdown-item" [routerLink]="['/fetch-data']">Report</a>
+                <a class="dropdown-item" [routerLink]="['/export']">Export</a>
+              </div>
+            </li>
+
+            <!--<li class="nav-item " [routerLinkActive]="['link-active']">
+              <a class="nav-link text-dark" [routerLink]="['/fetch-data']">Data Management</a>
+            </li>-->
+
+            <li class="nav-item " [routerLinkActive]="['link-active']">
+              <a class="nav-link text-dark" [routerLink]="['/fetch-data']">Help</a>
+            </li>
+          </ul>
+        </div>
+        <ul style="padding-top:10px; float:left; width:200px; vertical-align:central;">
+          <li><a style="font-weight:900;" href="/splunk" class="font-italic">KCMON</a> </li>
+          <li><a href="/splunk">Kavoshcom Monitoring</a></li>
+        </ul>
+    </div>
+  </nav>
+</header>

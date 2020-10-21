@@ -1,0 +1,112 @@
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+  <!-- Content Header (Page header) -->
+  <section class="content-header">
+    <h1>
+      {{breadcroumb | translate}}
+      <small>{{ MachineName }}</small>
+    </h1>
+    <ol class="breadcrumb">
+      <li><a [routerLink]="['']" translate><i class="fa fa-dashboard"></i>Home</a></li>
+      <li><a [routerLink]="['/machine']" translate>DeviceList</a></li>
+      <li><a [routerLink]="['/machine/Message/', this.Machineid , this.MachineName]" translate>DeviceMessages</a></li>
+      <li class="active">{{breadcroumb | translate}} {{ MachineName }}</li>
+    </ol>
+
+  </section>
+
+  <!--<app-breadcrumb></app-breadcrumb>-->
+  <!-- Main content -->
+  <section class="content">
+    <div class="row">
+
+      <div class="col-md-12">
+        <!-- Horizontal Form -->
+        <div class="box box-primary">
+
+          <form class="form-horizontal" [formGroup]="machineMessageForm" (ngSubmit)="save()" #formDir="ngForm" novalidate>
+            <div class="box-body">
+
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="inputName" class="col-sm-3 control-label">
+                      <span class="text-danger">* </span>
+                      <span translate>SimcardType</span>:
+                    </label>
+                    <div class="col-sm-9">
+                      <select class="form-control" data-val="true" formControlName="Modem" required (change)="onSelectionChanged($event.target.value)">
+                        <option value=-1 translate>SelectSimcardTypePlease</option>
+                        <option value=1 translate>Test</option>
+                        <option value=0 translate>Modem</option>
+                      </select>
+                      <span class="text-danger col-md-12" *ngIf="f.Modem?.invalid && (f.Modem.touched || formDir.submitted)" translate>SimcardTypeIsRequired</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="inputName" class="col-sm-3 control-label">
+                      <span class="text-red">* </span>
+                      <span translate>SimcardNo</span>:
+                    </label>
+                    <div class="col-sm-9">
+                      <select class="form-control" data-val="true" formControlName="Sim">
+                        <option value=0 translate>SelectSimcardNoPlease</option>
+                        <option value=1> 1 </option>
+                        <option value=2> 2 </option>
+                        <option value=3> 3 </option>
+                        <option value=4> 4 </option>
+                      </select>
+                      <span class="text-danger col-md-12" *ngIf="f.Sim?.invalid && (f.Sim.touched || formDir.submitted)" translate>SimcardNoIsRequired</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="inputName" class="col-sm-3 control-label">
+                      <span class="text-danger">* </span>
+                      <span translate>USSD</span>:
+                    </label>
+                    <div class="col-sm-9">
+                      <div class="input-group">
+                        <span class="input-group-addon startIcon">
+                          <i class="fa fa-hashtag"></i>
+                        </span>
+                        <!--<span class="input-group-addon endIcon">
+                          <i class="fa fa-asterisk"></i>
+                        </span>-->
+                        <input class="form-control numberOnly" type="text" formControlName="Body" pattern="^[*+]{1}[*\d&]{1,}" required>
+                        <span class="input-group-addon  endIcon">
+                          <i class="fa fa-hashtag"></i>
+                        </span>
+                        <!--<span class="input-group-addon startIcon">
+                          <i class="fa fa-asterisk"></i>
+                        </span>-->
+                      </div>
+                        <span class="text-danger" *ngIf="f.Body.invalid && ( f.Body.touched || formDir.submitted)" translate>USSDIsRequired</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div><!-- /.box-body -->
+            <div class="overlay" *ngIf="showloader ">
+              <i class="fa fa-refresh fa-spin"></i>
+            </div>
+            <div class="box-footer">
+              <button class="btn btn-danger  rowEndAligne" (click)="cancel()" translate>Cancel</button>
+              <button type="submit" class="btn btn-primary  rowEndAligne" translate>Save</button>
+            </div><!-- /.box-footer -->
+          </form>
+
+        </div><!-- /.box -->
+
+      </div>
+    </div><!-- /.row -->
+
+  </section><!-- /.content -->
+</div><!-- /.content-wrapper -->

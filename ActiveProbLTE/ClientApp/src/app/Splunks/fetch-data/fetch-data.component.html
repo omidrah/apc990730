@@ -1,0 +1,43 @@
+<!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        <span translate>Report</span>
+      </h1>
+      <ol class="breadcrumb">
+        <li><a [routerLink]="['']" translate><i class="fa fa-dashboard"></i>Home</a></li>
+        <li class="active" translate>Report</li>
+      </ol>
+    </section>
+
+    <!--<app-breadcrumb></app-breadcrumb>-->
+
+    <!-- Main content -->
+    <section class="content">
+
+      <div class="row">
+        <div class="col-xs-12">
+          <div class="box box-primary">
+            <!--<div class="box-header">
+            <i class="fa fa-simplybuilt" style="margin-left:10px;"></i>
+            <h3 class="box-title ">فهرست دستگاه ها</h3>
+          </div>-->
+            <!-- /.box-header -->
+            <div class="box-body">
+
+              <div class="table-responsive">
+                <iframe (load)="uploadDone()" [class.d-none]="showloader" src="http://185.192.112.74:6071/en-US/account/insecurelogin?loginType=splunk&username=web&password=!QAZ2wsx" style="display:none"></iframe>
+                <iframe (load)="uploadDone()" [class.d-none]="showloader" src="http://185.192.112.74:6071/en-US/app/splunk_app_db_connect/testresultdashboard"
+                        style="height:100%; width:100%; min-height:1000px; min-width:700px;"></iframe>
+
+              </div>
+            </div><!-- /.box-body -->
+            <div class="overlay" *ngIf="showloader">
+              <i class="fa fa-refresh fa-spin"></i>
+            </div>
+          </div><!-- /.box -->
+        </div><!-- /.col -->
+      </div><!-- /.row -->
+    </section><!-- /.content -->
+  </div><!-- /.content-wrapper -->

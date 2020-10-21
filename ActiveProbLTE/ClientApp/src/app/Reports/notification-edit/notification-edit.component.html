@@ -1,0 +1,474 @@
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+  <!-- Content Header (Page header) -->
+  <section class="content-header">
+    <h1>
+      {{breadcroumb | translate}}
+      <small>{{ MachineName }}</small>
+    </h1>
+    <ol class="breadcrumb">
+      <li><a [routerLink]="['']" translate><i class="fa fa-dashboard"></i>Home</a></li>
+      <li><a [routerLink]="['/export/Notification']" translate>Notifications</a></li>
+      <li class="active">{{breadcroumb | translate}}</li>
+    </ol>
+
+  </section>
+
+  <!--<app-breadcrumb></app-breadcrumb>-->
+  <!-- Main content -->
+  <section class="content">
+    <div class="row">
+
+      <div class="col-md-12">
+        <!-- Horizontal Form -->
+        <div class="box box-primary">
+
+          <form class="form-horizontal" [formGroup]="notificationForm" (ngSubmit)="save()" #formDir="ngForm" novalidate>
+            <div class="box-body">
+
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="inputName" class="col-sm-3 control-label">
+                      <span class="text-danger">* </span>
+                      <span translate>Name</span>:
+                    </label>
+                    <div class="col-sm-9">
+                      <input class="form-control numberOnly" type="text" formControlName="name" required>
+                      <span class="text-danger col-md-12" *ngIf="f.name?.invalid && (f.name.touched || formDir.submitted)" translate>NameIsRequired</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="Activation" class="col-sm-3 control-label">
+                      <span translate>Active</span>:
+                    </label>
+                    <div class="col-sm-9">
+                      <input type="checkbox" formControlName="Activation">
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="inputName" class="col-sm-3 control-label">
+                      <span class="text-danger">* </span>
+                      <span translate>Title</span>:
+                    </label>
+                    <div class="col-sm-9">
+                      <input class="form-control" type="text" formControlName="title" required>
+                      <span class="text-danger col-md-12" *ngIf="f.title?.invalid && (f.title.touched || formDir.submitted)" translate>TitleIsRequired</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="MessageContent" class="col-sm-3 control-label">
+                      <span class="text-danger">* </span>
+                      <span translate>MessageContent</span>:
+                    </label>
+                    <div class="col-sm-9">
+                      <input class="form-control" type="text" formControlName="messageContent" required>
+                      <span class="text-danger col-md-12" *ngIf="f.messageContent?.invalid && (f.messageContent.touched || formDir.submitted)" translate>MessageContentIsRequired</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="inputName" class="col-sm-3 control-label">
+                      <span class="text-danger">* </span>
+                      <span translate>MaxSend</span>:
+                    </label>
+                    <div class="col-sm-9">
+                      <input class="form-control" type="number" formControlName="maxSend" required>
+                      <span class="text-danger col-md-12" *ngIf="f.maxSend?.invalid && (f.maxSend.touched || formDir.submitted)" translate>MaxSendIsRequired</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="MessageContent" class="col-sm-3 control-label">
+                      <span class="text-danger">* </span>
+                      <span translate>TimeIntervalToNextSend</span>:
+                    </label>
+                    <div class="col-sm-9">
+                      <input class="form-control" type="number" formControlName="timeIntervalToNextSend" required>
+                      <span class="text-danger col-md-12" *ngIf="f.timeIntervalToNextSend?.invalid && (f.timeIntervalToNextSend.touched || formDir.submitted)" translate>TimeIntervalToNextSendIsRequired</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="inputName" class="col-sm-3 control-label">
+                      <span class="text-danger">* </span>
+                      <span translate>NotifOn</span>:
+                    </label>
+                    <div class="col-sm-9">
+                      <select class="form-control" data-val="true" formControlName="notifOn" required (change)="onSelectionChanged($event.target.value)">
+                        <option value=-1 translate>SelectNotifOnPlease</option>
+                        <option value=0 translate>OnTime</option>
+                        <option value=1 translate>OnceADay</option>
+                        <option value=2 translate>InTimeRange</option>
+                      </select>
+                      <span class="text-danger col-md-12" *ngIf="f.notifOn?.invalid && (f.notifOn.touched || formDir.submitted)" translate>NotifOnIsRequired</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row" *ngIf="f.notifOn.value==2">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <span class="text-danger">* </span>
+                    <label for="inputName" class="col-sm-3 control-label"><span translate>SendStartTime</span>:</label>
+                    <div class="col-sm-9">
+                      <input type="time" class="form-control" formControlName="sendStartTime" required>
+                      <span class="text-danger col-md-12" *ngIf="f.sendStartTime?.invalid  && f.notifOn.value==2 && (f.sendStartTime.touched || formDir.submitted)" translate>SendStartTimeIsRequired</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <span class="text-danger">* </span>
+                    <label for="inputSerialNo" class="col-sm-3 control-label"><span translate>SendEndTime</span>:</label>
+                    <div class="col-sm-9">
+                      <input type="time" class="form-control" formControlName="sendEndTime" required>
+                      <span class="text-danger col-md-12" *ngIf="f.sendEndTime?.invalid && f.notifOn.value==2 && (f.sendEndTime.touched || formDir.submitted)" translate>SendStartTimeIsRequired</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="inputName" class="col-sm-3 control-label">
+                      <span class="text-danger">* </span>
+                      <span translate>Mobile</span>:
+                    </label>
+                    <div class="col-sm-9">
+                      <input class="form-control" type="text" formControlName="mobile" required>
+                      <span class="text-danger col-md-12" *ngIf="f.mobile?.invalid && (f.mobile.touched || formDir.submitted)" translate>MobileIsRequired</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="MessageContent" class="col-sm-3 control-label">
+                      <span class="text-danger">* </span>
+                      <span translate>Email</span>:
+                    </label>
+                    <div class="col-sm-9">
+                      <input class="form-control" type="text" formControlName="email" required>
+                      <span class="text-danger col-md-12" *ngIf="f.email?.invalid && (f.email.touched || formDir.submitted)" translate>EmailIsRequired</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+
+
+              <div formArrayName="parameters"
+                   *ngFor="let item of notificationForm.get('parameters').controls; let i = index;">
+
+                <hr />
+
+                <div [formGroupName]="i">
+
+                  <div class="row" *ngIf=" i > 0 ">
+                    <div class="col-lg-6">
+                      <div class="form-group">
+                        <label for="inputName" class="col-sm-3 control-label"><span translate>ParameterLogicalOperator</span>:</label>
+                        <div class="col-sm-9">
+                          <select class="form-control" data-val="true" formControlName="parameterLogicalSymbol">
+                            <option value="and" selected translate>AND</option>
+                            <option value="or" translate>OR</option>
+                          </select>
+                          <!--<span class="text-danger col-md-12" *ngIf="f.parameterLogicalSymbol?.invalid && (f.parameterLogicalSymbol.touched || formDir.submitted)" translate>OperatorIsRequired</span>-->
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-lg-6">
+                      <div class="form-group">
+                        <label for="inputName" class="col-sm-3 control-label"><span translate>Operator</span>:</label>
+                        <div class="col-sm-9">
+                          <select class="form-control" data-val="true" formControlName="operator">
+                            <!--<option value="" translate>SelectOperatorPlease</option>-->
+                            <option value="HAMRAHAVVAL" selected translate>HAMRAHAVVAL</option>
+                            <option value="INANCELL" translate>INANCELL</option>
+                            <option value="RIGHTEL" translate>RIGHTEL</option>
+                          </select>
+                          <!--<span class="text-danger col-md-12" *ngIf="f.operator?.invalid && (f.operator.touched || formDir.submitted)" translate>OperatorIsRequired</span>-->
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-lg-6">
+                      <div class="form-group">
+                        <label for="inputSerialNo" class="col-sm-3 control-label"><span translate>NetworkTitle</span>:</label>
+                        <div class="col-sm-9">
+                          <select class="form-control" data-val="true" formControlName="network">
+                            <!--<option value="" translate>SelectNetworkPlease</option>-->
+                            <option value="LTE" selected translate>LTE</option>
+                            <option value="WCDMA" translate>WCDMA</option>
+                            <option value="GSM" translate>GSM</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-lg-6">
+                      <div class="form-group">
+                        <label for="inputName" class="col-sm-3 control-label"><span translate>Type</span>:</label>
+                        <div class="col-sm-9">
+                          <div class="radio">
+                            <label>
+                              <input type="radio" [name]="i" value="Device" checked #Device>
+                              <span translate>Device</span>
+                            </label>
+                            <label style="margin:0 20px;">
+                              <input type="radio" [name]="i" value="Group" #Group>
+                              <span translate>Group</span>
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-lg-6">
+                      <div class="form-group" *ngIf="Device.checked">
+                        <label for="inputSerialNo" class="col-sm-3 control-label">
+                          <span class="text-danger">* </span>
+                          <span translate>Device</span>:
+                        </label>
+                        <div class="col-sm-9">
+                          <select class="form-control" data-val="true" formControlName="device" required>
+                            <option value="" translate>SelectDevicePlease</option>
+                            <option value="Device1" translate>Device1</option>
+                            <option value="Device2" translate>Device2</option>
+                            <option value="Device3" translate>Device3</option>
+                          </select>
+                          <span class="text-danger col-md-12" *ngIf="f.parameters.controls[i].controls.device?.invalid && (f.parameters.controls[i].controls.device.touched || formDir.submitted)" translate>DeviceIsRequired</span>
+                        </div>
+                      </div>
+                      <div class="form-group" *ngIf="Group.checked">
+                        <label for="inputSerialNo" class="col-sm-3 control-label">
+                          <span class="text-danger">* </span>
+                          <span translate>Group</span>:
+                        </label>
+                        <div class="col-sm-9">
+                          <select class="form-control" data-val="true" formControlName="group" required>
+                            <option value="" translate>SelectGroupPlease</option>
+                            <option value="Group1" translate>Group1</option>
+                            <option value="Group2" translate>Group2</option>
+                            <option value="Group3" translate>Group3</option>
+                          </select>
+                          <span class="text-danger col-md-12" *ngIf="f.parameters.controls[i].controls.group?.invalid && (f.parameters.controls[i].controls.group.touched || formDir.submitted)" translate>GroupIsRequired</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-lg-6">
+                      <div class="form-group">
+                        <label for="inputName" class="col-sm-3 control-label"><span translate>Zone</span>:</label>
+                        <div class="col-sm-9">
+                          <select class="form-control" data-val="true" formControlName="zone">
+                            <option value=0 translate>SelectZonePlease</option>
+                            <option *ngFor="let z of zoneList" [ngValue]="z.zoneId">
+                              {{z.title}}
+                            </option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-lg-6">
+                      <div class="form-group">
+                        <label for="inputName" class="col-sm-3 control-label">
+                          <span class="text-danger">* </span>
+                          <span translate>Parameter</span>:
+                        </label>
+                        <div class="col-sm-9">
+                          <select class="form-control" data-val="true" formControlName="parameter" required>
+                            <option value="" translate>SelectParameterPlease</option>
+                            <option value="RSRP" translate>RSRP</option>
+                            <option value="RXLevel" translate>RXLevel</option>
+                            <option value="RSRQ" translate>RSRQ</option>
+                          </select>
+                          <span class="text-danger col-md-12" *ngIf="f.parameters.controls[i].controls.parameter?.invalid && (f.parameters.controls[i].controls.parameter.touched || formDir.submitted)" translate>ParameterIsRequired</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-lg-6">
+                      <div class="form-group">
+                        <label for="inputSerialNo" class="col-sm-3 control-label">
+                          <span class="text-danger">* </span>
+                          <span translate>Function</span>:
+                        </label>
+                        <div class="col-sm-9">
+                          <select class="form-control" data-val="true" formControlName="function" required>
+                            <option value="" translate>SelectFunctionPlease</option>
+                            <option value="min">Min</option>
+                            <option value="max">Max</option>
+                            <option value="sum">Sum</option>
+                            <option value="count">Count</option>
+                            <option value="first">First</option>
+                            <option value="last">Last</option>
+                            <option value="avgrage">Avgrage</option>
+                            <option value="mean">Mean</option>
+                          </select>
+                          <span class="text-danger col-md-12" *ngIf="f.parameters.controls[i].controls.function?.invalid && (f.parameters.controls[i].controls.function.touched || formDir.submitted)" translate>FunctionIsRequired</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-lg-6">
+                      <div class="form-group">
+                        <label for="inputName" class="col-sm-3 control-label">
+                          <span class="text-danger">* </span>
+                          <span translate>SearchStartDate</span>:
+                        </label>
+                        <div class="col-sm-9">
+                          <input [matDatepicker]="beginDate" type="text" class="form-control" formControlName="searchStartDate" (click)="beginDate.open()">
+                          <mat-datepicker #beginDate></mat-datepicker>
+                          <span class="text-danger col-md-12" *ngIf="f.parameters.controls[i].controls.searchStartDate?.invalid && (f.parameters.controls[i].controls.searchStartDate.touched || formDir.submitted)" translate>SearchStartDateIsRequired</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-lg-6">
+                      <div class="form-group">
+                        <label for="inputSerialNo" class="col-sm-3 control-label">
+                          <span class="text-danger">* </span>
+                          <span translate>SearchEndDate</span>:
+                        </label>
+                        <div class="col-sm-9">
+                          <input [matDatepicker]="endDate" type="text" class="form-control" formControlName="searchEndDate" (click)="endDate.open()">
+                          <mat-datepicker #endDate></mat-datepicker>
+                          <span class="text-danger col-md-12" *ngIf="f.parameters.controls[i].controls.searchEndDate?.invalid && (f.parameters.controls[i].controls.searchEndDate.touched || formDir.submitted)" translate>SearchEndDateIsRequired</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-lg-6">
+                      <div class="form-group">
+                        <div class="col-sm-3"></div>
+                        <div class="col-sm-9">
+                          <i class="fa fa-plus-circle text-green" (click)="addParameter()"><span translate>CreateNewParameterOperator</span></i>
+
+                          <i class="fa fa-minus-circle text-red" (click)="removeParameter(i)" *ngIf=" i > 0 " style="margin:0 10px;"><span translate>Delete</span></i>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+
+                  <div formArrayName="filters"
+                       *ngFor="let filter of item.get('filters').controls; let j = index;">
+
+                    <hr />
+
+                    <div [formGroupName]="j">
+
+                      <div class="row" *ngIf=" j > 0 ">
+                        <div class="col-lg-2"></div>
+                        <div class="col-lg-5">
+                          <div class="form-group">
+                            <label for="inputName" class="col-sm-3 control-label"><span translate>ConditionLogicalOperator</span>:</label>
+                            <div class="col-sm-9">
+                              <select class="form-control" data-val="true" formControlName="filterlogicalSymbol">
+                                <option value="and" selected translate>AND</option>
+                                <option value="or" translate>OR</option>
+                              </select>
+                              <!--<span class="text-danger col-md-12" *ngIf="f.filterlogicalSymbol?.invalid && (f.filterlogicalSymbol.touched || formDir.submitted)" translate>OperatorIsRequired</span>-->
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="row">
+                        <div class="col-lg-2"></div>
+                        <div class="col-lg-5">
+                          <div class="form-group">
+                            <label for="inputSerialNo" class="col-sm-3 control-label">
+                              <span class="text-danger">* </span>
+                              <span translate>MathematicalSymbol</span>:
+                            </label>
+                            <div class="col-sm-9">
+                              <select class="form-control" data-val="true" formControlName="mathematicalSymbol" required>
+                                <option value="" translate>SelectMathematicalSymbolPlease</option>
+                                <option value="<"><</option>
+                                <option value="<="><=</option>
+                                <option value=">">></option>
+                                <option value=">=">>=</option>
+                                <option value="!=">!=</option>
+                                <option value="=">=</option>
+                              </select>
+                              <span class="text-danger col-md-12" *ngIf="f.parameters.controls[i].controls.filters.controls[j].controls.mathematicalSymbol?.invalid && (f.parameters.controls[i].controls.filters.controls[j].controls.mathematicalSymbol.touched || formDir.submitted)" translate>MathematicalSymbolIsRequired</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-lg-5">
+                          <div class="form-group">
+                            <label for="inputName" class="col-sm-3 control-label">
+                              <span class="text-danger">* </span>
+                              <span translate>OtherSideOfTheCondition</span>:
+                            </label>
+                            <div class="col-sm-9">
+                              <input class="form-control" type="text" formControlName="conditionalValue" required>
+                              <span class="text-danger col-md-12" *ngIf="f.parameters.controls[i].controls.filters.controls[j].controls.conditionalValue?.invalid && (f.parameters.controls[i].controls.filters.controls[j].controls.conditionalValue.touched || formDir.submitted)" translate>OtherSideOfTheConditionIsRequired</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-lg-2"></div>
+                        <div class="col-lg-5">
+                          <div class="form-group">
+                            <div class="col-sm-3"></div>
+                            <div class="col-sm-9">
+                              <i class="fa fa-plus-circle text-green" (click)="addFilter(item)"><span translate>CreateNewFilter</span></i>
+
+                              <i class="fa fa-minus-circle text-red" (click)="removeFilter(item,j)" *ngIf=" j > 0 " style="margin:0 10px;"><span translate>Delete</span></i>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+
+                </div>
+              </div>
+
+
+            </div><!-- /.box-body -->
+            <div class="overlay" *ngIf="showloader ">
+              <i class="fa fa-refresh fa-spin"></i>
+            </div>
+            <div class="box-footer">
+              <button class="btn btn-danger  rowEndAligne" (click)="cancel()" translate>Cancel</button>
+              <button type="submit" class="btn btn-primary  rowEndAligne" translate>Save</button>
+            </div><!-- /.box-footer -->
+          </form>
+
+        </div><!-- /.box -->
+
+      </div>
+    </div><!-- /.row -->
+
+  </section><!-- /.content -->
+</div><!-- /.content-wrapper -->

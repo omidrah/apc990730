@@ -1,0 +1,18 @@
+<div>
+  <button (click)="open(dropdown, origin)" #origin>
+
+    <ng-template [ngIf]="!isOpen" [ngIfElse]="searchTpl">
+      {{ label }}
+    </ng-template>
+
+    <ng-template #searchTpl>
+      <input [formControl]="searchControl">
+    </ng-template>
+
+  </button>
+
+  <ng-template #dropdown>
+    // options list
+  </ng-template>
+
+</div>

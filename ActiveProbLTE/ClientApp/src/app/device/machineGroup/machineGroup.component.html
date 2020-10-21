@@ -1,0 +1,125 @@
+<!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        <span translate>DeviceGroup</span>
+      </h1>
+    <ol class="breadcrumb">
+      <li><a [routerLink]="['']" translate><i class="fa fa-dashboard"></i>Home</a></li>
+      <li class="active"><span translate>DeviceGroup</span></li>
+    </ol>
+  </section>
+
+    <!--<app-breadcrumb></app-breadcrumb>-->
+
+    <!-- Main content -->
+    <section class="content">
+      
+        <div class="row">
+          <div class="col-xs-12">
+            <div class="box box-primary">
+              <div class="box-body">
+
+                <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
+                  <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding>
+                    <button mat-icon-button disabled></button>
+
+                    <div [hidden]="node.editing">
+                      <label class="control-label fa-lg">{{node.item}}</label>
+
+                      <button class=" btn-lg" mat-icon-button matTooltip="{{ 'Delete' | translate }}" matTooltipClass="example-tooltip-red" matTooltipPosition="below" (click)="removeNode(node)" *ngIf="node.level != 0"><mat-icon color="warn">delete</mat-icon></button>
+
+                      <button mat-icon-button matTooltip="{{ 'Edit' | translate }}" matTooltipClass="example-tooltip-red" matTooltipPosition="below" (click)="editNode(node)" *ngIf="node.level != 0"><mat-icon color="primary">edit</mat-icon></button>
+                      <button mat-icon-button matTooltip="{{ 'AddSubGroup' | translate }}" matTooltipClass="example-tooltip-red" matTooltipPosition="below" (click)="addNewItem(node)"><mat-icon color="primary">add</mat-icon></button>
+
+                      <button mat-icon-button matTooltip="{{ 'DeviceToGroup' | translate }}" matTooltipClass="example-tooltip-red" matTooltipPosition="below" (click)="groupDviceAssignment(node)" *ngIf="node.level != 0"><mat-icon color="primary">assignment_turned_in</mat-icon></button>
+
+                      <button mat-icon-button matTooltip="{{ 'AssignTestToGroup' | translate }}" matTooltipClass="example-tooltip-red" matTooltipPosition="below" (click)="groupTestAssignment(node)" *ngIf="node.level != 0 && !(config && config.name === 'Modem')"><mat-icon color="primary">assignment</mat-icon></button>
+                      <button mat-icon-button matTooltip="{{ 'Update' | translate }}" matTooltipClass="example-tooltip-red" matTooltipPosition="below" (click)="groupUpdateAssignment(node)" *ngIf="node.level != 0"><mat-icon color="primary">update</mat-icon></button>
+                    </div>
+
+                    <div [hidden]="!node.editing">
+                      <button mat-icon-button disabled></button>
+                      <mat-form-field>
+                        <input matInput #itemValue placeholder="{{ 'Title' | translate }}" [value]="node.item">
+                      </mat-form-field>
+                      <button mat-icon-button matTooltip="{{ 'Save' | translate }}" matTooltipClass="example-tooltip-red" matTooltipPosition="below" (click)="saveNode(node, itemValue.value)"><mat-icon>save</mat-icon></button>
+                      <button mat-icon-button matTooltip="{{ 'Cancel' | translate }}" matTooltipClass="example-tooltip-red" matTooltipPosition="below" (click)="cancelEditNode(node)"><mat-icon>cancel</mat-icon></button>
+                    </div>
+
+                  </mat-tree-node>
+
+                  <mat-tree-node *matTreeNodeDef="let node; when: hasNoContent" matTreeNodePadding>
+                    <button mat-icon-button disabled></button>
+                    <mat-form-field>
+                      <input matInput #itemValue1 placeholder="{{ 'Title' | translate }}">
+                    </mat-form-field>
+                    <button mat-button matTooltip="{{ 'Save' | translate }}" matTooltipClass="example-tooltip-red" matTooltipPosition="below" (click)="saveNode(node, itemValue1.value)"><mat-icon>save</mat-icon></button>
+                    <button mat-button matTooltip="{{ 'Cancel' | translate }}" matTooltipClass="example-tooltip-red" matTooltipPosition="below" (click)="removeTempNode(node)"><mat-icon>cancel</mat-icon></button>
+                  </mat-tree-node>
+
+                  <mat-tree-node *matTreeNodeDef="let node; when: hasChild" matTreeNodePadding>
+                    <button mat-icon-button matTreeNodeToggle
+                            [attr.aria-label]="'toggle '">
+                      <mat-icon class="mat-icon-rtl-mirror">
+                        {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+                      </mat-icon>
+                    </button>
+                    <div [hidden]="node.editing">
+                      <label class="control-label fa-lg">{{node.item}}</label>
+
+                      <button mat-icon-button matTooltip="{{ 'Delete' | translate }}" matTooltipClass="example-tooltip-red" matTooltipPosition="below" (click)="removeNode(node)" *ngIf="node.level != 0"><mat-icon color="warn">delete</mat-icon></button>
+
+                      <button mat-icon-button matTooltip="{{ 'Edit' | translate }}" matTooltipClass="example-tooltip-red" matTooltipPosition="below" (click)="editNode(node)" *ngIf="node.level != 0"><mat-icon color="primary">edit</mat-icon></button>
+                      <button mat-icon-button matTooltip="{{ 'AddSubGroup' | translate }}" matTooltipClass="example-tooltip-red" matTooltipPosition="below" (click)="addNewItem(node)"><mat-icon color="primary">add</mat-icon></button>
+
+                      <button mat-icon-button matTooltip="{{ 'DeviceToGroup' | translate }}" matTooltipClass="example-tooltip-red" matTooltipPosition="below" (click)="groupDviceAssignment(node)" *ngIf="node.level != 0"><mat-icon color="primary">assignment_turned_in</mat-icon></button>
+
+                      <button mat-icon-button matTooltip="{{ 'AssignTestToGroup' | translate }}" matTooltipClass="example-tooltip-red" matTooltipPosition="below" (click)="groupTestAssignment(node)" *ngIf="node.level != 0 && !(config && config.name === 'Modem')"><mat-icon color="primary">assignment</mat-icon></button>
+                      <button mat-icon-button matTooltip="{{ 'Update' | translate }}" matTooltipClass="example-tooltip-red" matTooltipPosition="below" (click)="groupUpdateAssignment(node)" *ngIf="node.level != 0"><mat-icon color="primary">update</mat-icon></button>
+                    </div>
+
+                    <div [hidden]="!node.editing">
+                      <button mat-icon-button disabled></button>
+                      <mat-form-field>
+                        <input matInput #itemValue2 placeholder="{{ 'Title' | translate }}" [value]="node.item">
+                      </mat-form-field>
+                      <button mat-icon-button matTooltip="{{ 'Save' | translate }}" matTooltipClass="example-tooltip-red" matTooltipPosition="below" (click)="saveNode(node, itemValue2.value)"><mat-icon>save</mat-icon></button>
+                      <button mat-icon-button matTooltip="{{ 'Cancel' | translate }}" matTooltipClass="example-tooltip-red" matTooltipPosition="below" (click)="cancelEditNode(node)"><mat-icon>cancel</mat-icon></button>
+                    </div>
+                  </mat-tree-node>
+                </mat-tree>
+
+              </div><!-- /.box-body -->
+              <div class="overlay" *ngIf="showLoading">
+                <i class="fa fa-refresh fa-spin"></i>
+              </div>
+            </div><!-- /.box -->
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      
+
+      <div class="modal fade" id="modal-default" data-backdrop="static" style="display: none;">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span>
+              </button>
+              <h4 class="modal-title"><span translate>Noticeable</span></h4>
+            </div>
+            <div class="modal-body">
+              <p translate>DeleteGroupConfirmMessage</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default pull-left" data-dismiss="modal" translate>No</button>
+              <button type="button" class="btn btn-primary" (click)="doDelete()" translate>Yse</button>
+            </div>
+          </div>
+          <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+      </div>      
+    </section><!-- /.content -->
+  </div><!-- /.content-wrapper -->

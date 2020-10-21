@@ -1,0 +1,53 @@
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+  <!-- Content Header (Page header) -->
+  <section class="content-header">
+    <h1>
+      <h2>تنظیم سطوح دسترسی پویای نقش {{selectedRoleName}}</h2>
+    </h1>
+    <ol class="breadcrumb">
+      <li><a [routerLink]="['']" translate><i class="fa fa-dashboard"></i>Home</a></li>
+      <li class="active" translate>RoleList</li>
+    </ol>
+
+  </section>
+
+  <!--<app-breadcrumb></app-breadcrumb>-->
+  <!-- Main content -->
+  <section class="content">
+
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="box box-primary">
+          <div class="box-body">
+            <div class="row">
+              <div class="col-md-12">
+                <mat-form-field>
+                  <mat-label translate>Search</mat-label>
+                  <input matInput #input [(ngModel)]="search">
+                </mat-form-field>
+              </div>
+            </div>
+            <form [formGroup]="AccessForm" (ngSubmit)="submit()">
+              <ul *ngFor="let d of actsFormArray.controls; let i=index">
+                <input type="checkbox" [value]="d.value.controllerId" /> {{d.value.disp}}
+                <li *ngFor="let data of d.value.actions; let j=index">
+                  <label>
+                    <input type="checkbox" [value]="data.actionId" checked="{{data.selected}}" (change)="onCheckboxChange($event)" />
+                    {{data.actionName}}
+                  </label>
+                </li>
+              </ul>
+              <button class="btn btn-primary" translate>submit</button>
+              <button class="btn btn-danger " (click)="cancel()" translate>Cancel</button>
+            </form>
+          </div><!-- /.box-body -->
+          <div class="overlay" *ngIf="showloader ">
+            <i class="fa fa-refresh fa-spin"></i>
+          </div>
+        </div><!-- /.box -->
+      </div><!-- /.col -->
+    </div><!-- /.row -->
+
+  </section><!-- /.content -->
+</div><!-- /.content-wrapper -->

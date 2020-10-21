@@ -1,0 +1,37 @@
+<p>roleedit works!</p>
+<div class="box box-primary">
+  <form [formGroup]="roleForm" (ngSubmit)="Save()" #formDir="ngForm" novalidate>
+    <div class="box-body">
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="form-group">
+            <label class="col-sm-3 control-label" for="name">
+              <span class="text-danger">*</span>
+              <span >Name</span>
+            </label>
+            <div class="col-sm-9">
+              <input class="form-control" type="text" formControlName="name" required />
+              <span class="text-danger" *ngIf="name?.invalid && (name?.touched || formDir.submitted)">Name Is Required</span  >
+            </div>
+          </div>
+        </div>
+        </div>
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="form-group">
+            <label for="description" class="col-sm-3 control-label">
+              <span>Description</span>:
+            </label>
+            <div class="col-sm-9">
+              <input class="form-control" type="text" formControlName="description" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="box-footer">
+      <button class="btn btn-danger  rowEndAligne" (click)="cancel()" translate>Cancel</button>
+      <button type="submit" class="btn btn-primary  rowEndAligne" translate>Save</button>
+    </div><!-- /.box-footer -->
+  </form>
+</div>

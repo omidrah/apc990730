@@ -1,0 +1,153 @@
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+  <!-- Content Header (Page header) -->
+
+  <section class="content-header">
+    <h1>
+      <span translate>TestList</span>
+    </h1>
+    <ol class="breadcrumb">
+      <li><a [routerLink]="['']" translate><i class="fa fa-dashboard"></i>Home</a></li>
+      <li class="active"><span translate>TestList</span></li>
+    </ol>
+  </section>
+
+  <!--<app-breadcrumb></app-breadcrumb>-->
+  <!-- Main content -->
+  <section class="content">
+
+    <!--------------------------
+    | Your Page Content Here |
+    -------------------------->
+
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="box box-primary">
+          <div class="box-body">
+
+            <div class="row">
+              <div class="col-md-12">
+                <mat-form-field>
+                  <mat-label translate>Search</mat-label>
+                  <input matInput (keyup)="applyFilter($event)" #input>
+                </mat-form-field>
+                <a class="btn btn-success btn-lg rowEndAligne" [routerLink]="['/Test/Create']"><span translate>CreateTest</span><i class="fa fa-plus"></i></a>
+              </div>
+            </div>
+
+            <div class="mat-table-container mat-elevation-z8">
+              <table mat-table [dataSource]="dataSource" matSort class="table table-hover table-striped text-nowrap">
+
+                <!--- Note that these columns can be defined in any order.
+                The actual rendered columns are set as a property on the row definition" -->
+
+                <ng-container matColumnDef="index">
+                  <th mat-header-cell *matHeaderCellDef><span translate>Row</span></th>
+                  <td mat-cell *matCellDef="let element;let i = index;">
+                    {{this.paginator.pageIndex == 0 ? i + 1 : 1 + i + this.paginator.pageIndex * this.paginator.pageSize}}
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="title">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header><span translate>Title</span></th>
+                  <td mat-cell *matCellDef="let element"> {{element.title}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="layer3Messages">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header><span translate>Layer3Messages</span></th>
+                  <td mat-cell *matCellDef="let element">
+                    <i title="{{ (element.layer3Messages==true ? 'Yse' : 'No' ) | translate }}" class="fa fa-2x" [ngClass]=" { 'fa-minus-circle text-red': !element.layer3Messages , 'fa-check-circle text-green': element.layer3Messages==true} "></i>
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="repeatTime">
+                  <th mat-header-cell *matHeaderCellDef><span translate>RepeatTime</span></th>
+                  <td mat-cell *matCellDef="let element"> {{element.repeatTime}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="repeatCount">
+                  <th mat-header-cell *matHeaderCellDef><span translate>RepeatCount</span></th>
+                  <td mat-cell *matCellDef="let element"> {{element.repeatCount}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="measurementInterval">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header><span translate>MeasurementInterval</span></th>
+                  <td mat-cell *matCellDef="let element"> {{element.measurementInterval}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="testTypeTitle">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header><span translate>TestTypeTitle</span></th>
+                  <td mat-cell *matCellDef="let element"> {{element.testTypeTitle}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="networkTitle">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header><span translate>NetworkTitle</span></th>
+                  <td mat-cell *matCellDef="let element"> {{element.networkTitle}}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="bandTitle">
+                  <th mat-header-cell *matHeaderCellDef><span translate>BandTitle</span></th>
+                  <td mat-cell *matCellDef="let element"> {{element.bandTitle}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="saveLogFile">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header><span translate>SaveLogFile</span></th>
+                  <td mat-cell *matCellDef="let element">
+                    <i title="{{ (element.saveLogFile==true ? 'Yse' : 'No' ) | translate }}" class="fa fa-2x"
+                       [ngClass]="{'fa-minus-circle text-red': element.saveLogFile==false , 'fa-check-circle text-green': element.saveLogFile==true} "></i>
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="actions" sticky [stickyEnd]="true">
+                  <th mat-header-cell *matHeaderCellDef></th>
+                  <td mat-cell *matCellDef="let element">
+
+                    <a class="btn btn-default gridbutton" *ngIf="!element.editable" [routerLink]="['/Test/edit/' , element.id]" title="{{ 'Edit' | translate }}"><i class="fa fa-edit"></i></a>
+
+                    <a class="btn btn-default gridbutton" *ngIf="element.editable" [routerLink]="['/Test/edit/' , element.id]" title="{{ 'Visit' | translate }}"><i class="fa fa-calendar-plus-o"></i></a>
+
+                    <a class="btn btn-default gridbutton" [class.disabled]="element.editable" (click)="deleteTest(element.id,element.title)" title="{{ 'Delete' | translate }}" data-toggle="modal" data-target="#modal-default"><i class="fa fa-trash"></i></a>
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+              </table>
+              <mat-paginator [pageSize]="10" [pageSizeOptions]="[10 , 25 , 50 , 100]" [showFirstLastButtons]="true"></mat-paginator>
+
+            </div>
+
+          </div><!-- /.box-body -->
+          <div class="overlay" *ngIf="showloader">
+            <i class="fa fa-refresh fa-spin"></i>
+          </div>
+        </div><!-- /.box -->
+      </div><!-- /.col -->
+    </div><!-- /.row -->
+
+    <div class="modal fade" id="modal-default" data-backdrop="static" style="display: none;">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">×</span>
+            </button>
+            <h4 class="modal-title" translate>Noticeable</h4>
+          </div>
+          <div class="modal-body">
+            <p translate>DeleteTestConfirmMessage</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default pull-left" data-dismiss="modal" translate>No</button>
+            <button type="button" class="btn btn-primary" (click)="doDelete()" translate>Yse</button>
+          </div>
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
+
+  </section>
+  <!-- /.content -->
+</div>
+<!-- /.content-wrapper -->

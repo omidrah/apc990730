@@ -1,0 +1,14 @@
+.map {
+  width: 100%;
+  height: 100vh;
+}
+
+.example-tooltip-red {
+  background: #b71c1c;
+  font-size: 20px;
+}
+
+.mat-selection-list {
+  max-height: 200px;
+  overflow: auto;
+}
