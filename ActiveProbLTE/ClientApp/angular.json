@@ -5,7 +5,7 @@
   "projects": {
     "ActiveProbeCore": {
       "root": "",
-      "sourceRoot": "src",
+      "sourceRoot": "src",      
       "projectType": "application",
       "prefix": "app",
       "schematics": {},
@@ -76,7 +76,8 @@
               "aot": true,
               "extractLicenses": true,
               "vendorChunk": false,
-              "buildOptimizer": true
+              "buildOptimizer": true,
+              "showCircularDependencies": true
             }
           }
         },

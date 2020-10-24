@@ -11,6 +11,8 @@ using ActiveProbe.Domain.Identity;
 using DNTPersianUtils.Core;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using ActiveProbe.DataLayer.Context;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ActiveProbeCore.Controllers
 {
@@ -19,24 +21,33 @@ namespace ActiveProbeCore.Controllers
     public class UserController : ControllerBase
     {
         private readonly ILogger<UserController> _logger;
+        private readonly IUnitOfWork _uow;
+        private readonly ITokenFactoryService _tokenFactoryService;
         private readonly IApcSignInManager _signInManager;
+        private readonly ITokenStoreService _tokenStore;
         private readonly IApcUserManager _userManager;
-        private readonly IApcRoleManager _roleManager;
+        
         public UserController(
-            IApcSignInManager signInManager,
+            IApcSignInManager signInManager,                  
+            IUnitOfWork uow,
+        ITokenStoreService tokenStore,
+                    ITokenFactoryService tokenFactoryService,
             IApcUserManager userManager,
             IApcRoleManager roleManager,
             ILogger<UserController> logger)
         {
-            _signInManager = signInManager ?? throw new ArgumentNullException(nameof(_signInManager));
-            _roleManager = roleManager ?? throw new ArgumentNullException(nameof(_roleManager));
+            _signInManager = signInManager ?? throw new ArgumentNullException(nameof(_signInManager));        
             _userManager = userManager ?? throw new ArgumentNullException(nameof(_userManager));
+            _tokenStore = tokenStore ?? throw new ArgumentNullException(nameof(_tokenStore));
+            _tokenFactoryService = tokenFactoryService ?? throw new ArgumentNullException(nameof(_tokenFactoryService));
             _logger = logger ?? throw new ArgumentNullException(nameof(_logger));
+            _uow = uow;
         }
         [HttpPost]
         [Route("[action]")]
         public async Task<IActionResult> Authenticate(loginVm usr)
         {
+
             var user = await _userManager.FindByNameAsync(usr.UserName).ConfigureAwait(false);
             if (user == null)
             {
@@ -50,65 +61,57 @@ namespace ActiveProbeCore.Controllers
             if (result.Succeeded)
             {
                 _logger.LogInformation("User logged in.");
-                
-                var cookieClaims = await createCookieClaimsAsync(user).ConfigureAwait(false);
-                //await HttpContext.SignInAsync(
-                //    CookieAuthenticationDefaults.AuthenticationScheme,
-                //    cookieClaims,
-                //    new AuthenticationProperties
-                //    {
-                //        IsPersistent = usr.rememberMe,
-                //        IssuedUtc = DateTimeOffset.UtcNow,
-                //        ExpiresUtc = DateTimeOffset.UtcNow.AddDays(5)
-                //    }
-                //).ConfigureAwait(false);
-                await _userManager.UpdateSecurityStampAsync(user).ConfigureAwait(false);
-                return Ok(cookieClaims);
+                var result2 = await _tokenFactoryService.CreateJwtTokensAsync(user).ConfigureAwait(false);
+                await _tokenStore.AddUserTokenAsync(user, result2.RefreshTokenSerial, result2.AccessToken, null).ConfigureAwait(false);
+                await _uow.SaveChangesAsync();
+                return Ok(new { access_token = result2.AccessToken, refresh_token = result2.RefreshToken });
             }
             return BadRequest(new { msg = "رمز عبور یا نام کاربری وارد شده صحیح نمی باشد.", state = "failed" });
         }
-        public async Task<bool> LogOff()
+        public async Task<bool> LogOff(string refreshToken)
         {
-            var user = User.Identity.IsAuthenticated ?
-                await _userManager.FindByNameAsync(User.Identity.Name) : null;
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme).ConfigureAwait(false);           
+            var claimsIdentity = this.User.Identity as ClaimsIdentity;
+            var userIdValue = claimsIdentity.FindFirst(ClaimTypes.UserData)?.Value;
+            // The Jwt implementation does not support "revoke OAuth token" (logout) by design.
+            // Delete the user's tokens from the database (revoke its bearer token)
+            await _tokenStore.RevokeUserBearerTokensAsync(userIdValue, refreshToken).ConfigureAwait(false);
+            await _uow.SaveChangesAsync().ConfigureAwait(false);
             return true;
         }
+        [AllowAnonymous]
+        [IgnoreAntiforgeryToken]
+        [HttpPost("[action]")]
+        public async Task<IActionResult> RefreshToken([FromBody] Token model)
+        {
+            var refreshTokenValue = model.RefreshToken;
+            if (string.IsNullOrWhiteSpace(refreshTokenValue))
+            {
+                return BadRequest("refreshToken is not set.");
+            }
+
+            var token = await _tokenStore.FindTokenAsync(refreshTokenValue).ConfigureAwait(false);
+            if (token == null)
+            {
+                return Unauthorized();
+            }
+            var result = await _tokenFactoryService.CreateJwtTokensAsync(token.User).ConfigureAwait(false);
+            await _tokenStore.AddUserTokenAsync(token.User, result.RefreshTokenSerial, result.AccessToken, _tokenFactoryService.GetRefreshTokenSerial(refreshTokenValue)).ConfigureAwait(false);
+            await _uow.SaveChangesAsync().ConfigureAwait(false);
+            return Ok(new { access_token = result.AccessToken, refresh_token = result.RefreshToken });
+        }
+
         [HttpGet("[action]"), HttpPost("[action]")]
-        public bool IsAuthenthenticated()
+        public bool IsAuthenticated()
         {
             return User.Identity.IsAuthenticated;
         }
+
         [HttpGet("[action]"), HttpPost("[action]")]
         public IActionResult GetUserInfo()
         {
             var claimsIdentity = User.Identity as ClaimsIdentity;
             return Ok(new { Username = claimsIdentity.Name });
         }
-        private async Task<ClaimsPrincipal> createCookieClaimsAsync(User user)
-        {
-            var identity = new ClaimsIdentity(CookieAuthenticationDefaults.AuthenticationScheme);
-            identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()));
-            identity.AddClaim(new Claim(ClaimTypes.Name, user.UserName));
-            identity.AddClaim(new Claim("DisplayName", user.DisplayName));
-            identity.AddClaim(new Claim("LastLoginDate", user.LastVisitDateTime.ToShortPersianDateString()));
-            // add roles
-            var roles = _roleManager.FindUserRoles(user.Id);
-            foreach (var role in roles)
-            {   
 
-                identity.AddClaim(new Claim(ClaimTypes.Role, role.Name));
-                if (role.Claims != null)
-                {
-                    foreach (var access in role.Claims)
-                    {
-
-                        identity.AddClaim(new Claim(access.ClaimType, access.ClaimValue));
-                    }
-                }
-                
-            }
-            return new ClaimsPrincipal(identity);
-        }
     }
 }

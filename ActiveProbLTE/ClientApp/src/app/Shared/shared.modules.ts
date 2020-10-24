@@ -19,6 +19,7 @@ import { Platform } from '@angular/cdk/platform';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { PduDecoderService } from './services/pdu-decoder.service';
+import { APP_CONFIG, AppConfig } from './config';
 
 @NgModule({
   declarations: [
@@ -100,7 +101,8 @@ import { PduDecoderService } from './services/pdu-decoder.service';
         return service;
       },
       deps: [TranslateService]
-    }
+    },
+    { provide: APP_CONFIG, useValue: AppConfig }
 
   ]
 })

@@ -3,19 +3,22 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ActiveProbe.Services.Services
+namespace ActiveProbe.Services
 {
     public class TokenValidatorService : ITokenValidatorService
     {
-        private readonly IApcUserManager _usersService;        
+        private readonly IApcUserManager _usersService;
+        private readonly ITokenStoreService _tokenStoreService;
 
-        public TokenValidatorService(IApcUserManager usersService)
+        public TokenValidatorService(IApcUserManager usersService,ITokenStoreService tokenStoreService)
         {
-            _usersService = usersService;            
+            _usersService = usersService ?? throw new ArgumentNullException(nameof(_usersService));
+            _tokenStoreService = tokenStoreService ?? throw new ArgumentNullException(nameof(_usersService));
         }
 
         public async Task ValidateAsync(TokenValidatedContext context)
@@ -57,8 +60,8 @@ namespace ActiveProbe.Services.Services
                 context.Fail("This token is not in our database.");
                 return;
             }
-
-            await _usersService.UpdateUserLastActivityDateAsync(userId).ConfigureAwait(false);
+            
+            await _usersService.UpdateSecurityStampAsync(user).ConfigureAwait(false);             
         }
     }
 }

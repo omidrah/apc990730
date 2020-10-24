@@ -10,9 +10,7 @@ export class AppComponent {
   public isAuthenticate:boolean;
   logoutSubsc: Subscription;
 
-  constructor(
-    private auth: AuthenticationService, private route: Router
-  ) {
+  constructor(private auth: AuthenticationService, private route: Router) {
     this.route.events.subscribe((e) => {
       if (e instanceof NavigationEnd) {
         window.dispatchEvent(new Event('resize'));

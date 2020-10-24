@@ -52,7 +52,7 @@ var ChecklistDatabase = /** @class */ (function () {
     }
     Object.defineProperty(ChecklistDatabase.prototype, "data", {
         get: function () { return this.dataChange.value; },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     ChecklistDatabase.prototype.initialize = function () {

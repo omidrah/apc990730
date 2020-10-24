@@ -1,38 +1,35 @@
 ﻿using ActiveProbe.DataLayer.Context;
 using ActiveProbe.Domain.Identity;
 using ActiveProbe.Services.Interfaces;
+using ActiveProbe.Utils.ViewModel;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
-namespace ActiveProbe.Services.Services
+namespace ActiveProbe.Services
 {
     public class TokenStoreService : ITokenStoreService
     {
         private readonly ISecurityService _securityService;
         private readonly IUnitOfWork _uow;
         private readonly DbSet<UserToken> _tokens;
-        private readonly IOptionsSnapshot<BearerTokensOptions> _configuration;
+        private readonly IOptionsSnapshot<BearerTokens> _configuration;
         private readonly ITokenFactoryService _tokenFactoryService;
-
         public TokenStoreService(
             IUnitOfWork uow,
             ISecurityService securityService,
-            IOptionsSnapshot<BearerTokensOptions> configuration,
+            IOptionsSnapshot<BearerTokens> configuration,
             ITokenFactoryService tokenFactoryService)
         {
-            _uow = uow ??  _uow.CheckArgumentIsNull(nameof(_uow));
-
-            _securityService = securityService;
-            _securityService.CheckArgumentIsNull(nameof(_securityService));
-
+            _uow = uow ?? throw new ArgumentNullException(nameof(_uow));
+            _securityService = securityService ??throw new ArgumentNullException(nameof(_securityService));
             _tokens = _uow.Set<UserToken>();
-
-            _configuration = configuration;
-            _configuration.CheckArgumentIsNull(nameof(configuration));
-
-            _tokenFactoryService = tokenFactoryService;
-            _tokenFactoryService.CheckArgumentIsNull(nameof(tokenFactoryService));
+            _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            _tokenFactoryService = tokenFactoryService ?? throw new ArgumentNullException(nameof(tokenFactoryService));
         }
 
         public async Task AddUserTokenAsync(UserToken userToken)
@@ -146,4 +143,4 @@ namespace ActiveProbe.Services.Services
         }
     }
 }
-}
+

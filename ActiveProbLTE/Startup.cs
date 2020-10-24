@@ -45,7 +45,7 @@ namespace ActiveProbeCore
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
-        {            
+        {
             services.AddLogging((opt) =>
             {
                 opt.ClearProviders();
@@ -65,33 +65,45 @@ namespace ActiveProbeCore
             {
                 configuration.RootPath = "ClientApp/dist";
             });
-            //Util.ConnectionStrings = Configuration.GetConnectionString("localConnection");
-            Util.ConnectionStrings = Configuration.GetConnectionString("localConnection");
-
-            services.AddHttpContextAccessor();
+            AddCustomOptions(services);
             services.AddDbContext<ActiveProbeCoreContext>(
                 //options => options.UseSqlServer(Configuration.GetConnectionString("localConnection"))
                 options => options.UseSqlServer(Util.ConnectionStrings)
             );
-            services.AddCors();            
-            services.Configure<ConfigurationsVm>(Configuration.GetSection(ConfigurationsVm.Project));
-            CustomIdentity(services);            
-            CustomDIContainer(services);            
+            CustomIdentity(services);
+            CustomDIContainer(services);
+
+            CustomJwt(services);
             CustomAuthorize(services);
             //CustomCookie(services);
-            CustomJwt(services);
-            services.AddControllers().
-                AddNewtonsoftJson(x => 
-                      x.SerializerSettings.ReferenceLoopHandling =
-                     Newtonsoft.Json.ReferenceLoopHandling.Ignore);                //Add for looping
 
-            enableImmediateLogout(services);
+            services.AddHttpContextAccessor();
+            services.AddCors();
+            services.AddControllers().AddNewtonsoftJson(x =>
+                     x.SerializerSettings.ReferenceLoopHandling =
+                    Newtonsoft.Json.ReferenceLoopHandling.Ignore);                //Add for looping
+
             services.AddHostedService<TimedHostedService>();
         }
+        public void AddCustomOptions(IServiceCollection services)
+        {
+            //Util.ConnectionStrings = Configuration.GetConnectionString("localConnection");
+            Util.ConnectionStrings = Configuration.GetConnectionString("localConnection");
 
+            services.AddOptions<BearerTokens>()
+               .Bind(Configuration.GetSection("Project:BearerTokens"))
+               .Validate(bearerTokens =>
+               {
+                   return bearerTokens.AccessTokenExpirationMinutes < bearerTokens.RefreshTokenExpirationMinutes;
+               },
+               "RefreshTokenExpirationMinutes is less than AccessTokenExpirationMinutes. Obtaining new tokens using the refresh token should happen only if the access token has expired.");
+            services.AddOptions<ApiSettings>()
+                    .Bind(Configuration.GetSection("Project:ApiSettings"));
+
+            services.Configure<ConfigurationsVm>(Configuration.GetSection(ConfigurationsVm.Project));
+        }
         private void CustomJwt(IServiceCollection services)
         {
-            services.Configure<BearerTokens>(options => Configuration.GetSection("BearerTokens").Bind(options));
             services.AddAuthentication(options =>
             {
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -103,9 +115,9 @@ namespace ActiveProbeCore
                 cfg.SaveToken = true;
                 cfg.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidIssuer = Configuration["BearerTokens:Issuer"],
-                    ValidAudience = Configuration["BearerTokens:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["BearerTokens:Key"])),
+                    ValidIssuer = Configuration["Project:BearerTokens:Issuer"],
+                    ValidAudience = Configuration["Project:BearerTokens:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Project:BearerTokens:Key"])),
                     ValidateIssuerSigningKey = true,
                     ValidateLifetime = true,
                     ClockSkew = TimeSpan.Zero
@@ -137,12 +149,11 @@ namespace ActiveProbeCore
             });
             ;
         }
-
         private void CustomAuthorize(IServiceCollection services)
-        {            
-            services.AddScoped<IAuthorizationHandler, KkomAuthorizationHandler>();            
+        {
+            services.AddScoped<IAuthorizationHandler, KkomAuthorizationHandler>();
             services.AddAuthorization(opts =>
-            {             
+            {
                 opts.AddPolicy(
                    name: ConstantPolicies.dynKkomAuthorization,
                    configurePolicy: policy =>
@@ -155,24 +166,24 @@ namespace ActiveProbeCore
         }
         private void CustomCookie(IServiceCollection services)
         {
-            services.AddAuthentication(options => {
+            services.AddAuthentication(options =>
+            {
                 options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             });
             services.ConfigureApplicationCookie(identityOptionsCookies =>
-            {                
-                var provider = services.BuildServiceProvider();                                
+            {
+                var provider = services.BuildServiceProvider();
                 setCookieOptions(provider, identityOptionsCookies);
-            });         
-            
-        }
+            });
 
+        }
         private void CustomDIContainer(IServiceCollection services)
         {
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             //Custom class for find contoller and action dynamic
-            services.AddSingleton<IMvcActionsDiscoveryService, MvcActionsDiscoveryService>();            
+            services.AddSingleton<IMvcActionsDiscoveryService, MvcActionsDiscoveryService>();
 
             services.AddScoped<IPrincipal>(provider =>
                 provider.GetService<IHttpContextAccessor>()?.HttpContext?.User ?? ClaimsPrincipal.Current);
@@ -197,9 +208,14 @@ namespace ActiveProbeCore
 
             services.AddScoped<IUserClaimsPrincipalFactory<User>, ApcClaimsPrincipalFactory>();
             services.AddScoped<UserClaimsPrincipalFactory<User, Role>, ApcClaimsPrincipalFactory>();
-            services.AddScoped<IIdentityDbInitializer,IdentityDbInitializer>();            
+            services.AddScoped<IIdentityDbInitializer, IdentityDbInitializer>();
             services.AddScoped<ISecurityTrimmingService, SecurityTrimmingService>();
             services.AddScoped<IAppLogItemsService, AppLogItemsService>();
+
+            services.AddSingleton<ISecurityService, SecurityService>();
+            services.AddScoped<ITokenStoreService, TokenStoreService>();
+            services.AddScoped<ITokenValidatorService, TokenValidatorService>();
+            services.AddScoped<ITokenFactoryService, TokenFactoryService>();
 
             //ActiveProbe
 
@@ -249,7 +265,6 @@ namespace ActiveProbeCore
             //initDB
             services.BuildServiceProvider().GetRequiredService<IIdentityDbInitializer>().SeedData();
         }
-
         private void CustomIdentity(IServiceCollection services)
         {
             services.AddIdentity<User, Role>(IdnOpt =>
@@ -262,14 +277,13 @@ namespace ActiveProbeCore
                 IdnOpt.Password.RequiredLength = 3;
                 //confirm email    
                 IdnOpt.SignIn.RequireConfirmedEmail = false;
-                IdnOpt.SignIn.RequireConfirmedPhoneNumber=false;
+                IdnOpt.SignIn.RequireConfirmedPhoneNumber = false;
                 //user
-                IdnOpt.User.RequireUniqueEmail = false;                
+                IdnOpt.User.RequireUniqueEmail = false;
                 //Lockout
                 IdnOpt.Lockout.AllowedForNewUsers = true;
 
-            })         
-              
+            })
               .AddUserStore<ApcUserStore>()
               .AddUserManager<ApcUserManager>()
               .AddRoleStore<ApcRoleStore>()
@@ -281,7 +295,6 @@ namespace ActiveProbeCore
         }
         private void setCookieOptions(ServiceProvider provider, CookieAuthenticationOptions idnCookie)
         {
-            
             idnCookie.Cookie.Name = "kkom-activeprobe";
             idnCookie.Cookie.HttpOnly = true;
             idnCookie.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
@@ -301,24 +314,6 @@ namespace ActiveProbeCore
                 }
             };
         }
-         private static void enableImmediateLogout(IServiceCollection services)
-        {
-            services.Configure<SecurityStampValidatorOptions>(options =>
-            {
-                // enables immediate logout, after updating the user's stat.
-                options.ValidationInterval = TimeSpan.Zero;
-                options.OnRefreshingPrincipal = principalContext =>
-                {
-                    // Invoked when the default security stamp validator replaces the user's ClaimsPrincipal in the cookie.
-
-                    //var newId = new ClaimsIdentity();
-                    //newId.AddClaim(new Claim("PreviousName", principalContext.CurrentPrincipal.Identity.Name));
-                    //principalContext.NewPrincipal.AddIdentity(newId);
-
-                    return Task.CompletedTask;
-                };
-            });
-        }
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -333,7 +328,7 @@ namespace ActiveProbeCore
             }
             //app.UseHttpsRedirection();//redirect http to https
             app.UseStaticFiles();
-            
+
             //Addeby omid 98-12-15,
             //he second call enables directory browsing of the wwwroot/Share
             app.UseStaticFiles(new StaticFileOptions
@@ -353,7 +348,7 @@ namespace ActiveProbeCore
             {
                 app.UseSpaStaticFiles();
             }
-         
+
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
