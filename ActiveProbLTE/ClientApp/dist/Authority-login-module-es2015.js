@@ -7,7 +7,7 @@
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"fullSize login-page\">\r\n  <div class=\"login-box\" style=\"\">\r\n\r\n    <div class=\"login-box-body\">\r\n\r\n\r\n      <div class=\"rowEndAligne \">\r\n        <button type=\"button\" class=\"btn btn-warning btn-flat\" style=\"margin:5px 10px;\" (click)=\"changeLangage('ar')\" translate>Persian</button>\r\n        <button type=\"button\" class=\"btn btn-warning btn-flat\" (click)=\"changeLangage('en')\" translate>English</button>\r\n      </div>\r\n\r\n      <div class=\"login-logo\">\r\n        <img src=\"/assets/dist/img/KCLogo.png\" alt=\"Alternate Text\" />\r\n      </div>\r\n      <div class=\"login-logo\">\r\n        <img class=\"logo\" src=\"/assets/dist/img/loginActivProb.png\" alt=\"سامانه پایش شبکه\" style=\"margin: auto; height: 150px\" />\r\n      </div><!-- /.login-logo -->\r\n\r\n      <form [formGroup]=\"loginForm\" (ngSubmit)=\"onSubmit()\" id=\"form1\" *ngIf=\"!showForgetPass\">\r\n        <div class=\"form-group has-feedback\">\r\n          <input type=\"email\" class=\"form-control\" placeholder=\"{{ 'TestDataUserName' | translate }}\" formControlName=\"username\">\r\n          <span class=\"fa fa-user form-control-feedback\"></span>\r\n        </div>\r\n        <div class=\"form-group has-feedback\">\r\n          <input type=\"password\" class=\"form-control\" placeholder=\"{{ 'TestDataPassword' | translate }}\" formControlName=\"password\">\r\n          <span class=\"fa fa-lock form-control-feedback\"></span>\r\n        </div>\r\n        <div class=\"row\">\r\n          <!-- /.col -->\r\n          <div class=\"col-xs-12\">\r\n            <button type=\"submit\" class=\"btn btn-warning btn-block btn-flat\" translate>Login</button>\r\n          </div><!-- /.col -->\r\n        </div>\r\n      </form>\r\n\r\n      <div *ngIf=\"showForgetPass\">\r\n        <div class=\"form-group has-feedback\">\r\n          <input type=\"email\" class=\"form-control\" placeholder=\"{{ 'Email' | translate }}\" [(ngModel)]=\"email\">\r\n          <span class=\"fa fa-envelope form-control-feedback\"></span>\r\n        </div>\r\n        <div class=\"row\">\r\n          <!-- /.col -->\r\n          <div class=\"col-xs-12\">\r\n            <button type=\"submit\" class=\"btn btn-warning btn-block btn-flat\" translate>SendNewPassword</button>\r\n          </div><!-- /.col -->\r\n        </div>\r\n      </div>\r\n      <br />\r\n      <button type=\"button\" class=\"btn btn-link text-decoration-none\" (click)=\"showForgetPass = !showForgetPass\" ng-model=\"showForgetPass\" style=\"text-decoration:none;\" translate>ForgotPassword</button>\r\n\r\n    </div><!-- /.login-box-body -->\r\n  </div><!-- /.login-box -->\r\n</div>\r\n"
+module.exports = "<div class=\"fullSize login-page\">\r\n  <div class=\"login-box\" style=\"\">\r\n\r\n    <div class=\"login-box-body\">\r\n\r\n\r\n      <div class=\"rowEndAligne \">\r\n        <button type=\"button\" class=\"btn btn-warning btn-flat\" style=\"margin:5px 10px;\" (click)=\"changeLangage('ar')\" translate>Persian</button>\r\n        <button type=\"button\" class=\"btn btn-warning btn-flat\" (click)=\"changeLangage('en')\" translate>English</button>\r\n      </div>\r\n\r\n      <div class=\"login-logo\">\r\n        <img src=\"/assets/dist/img/KCLogo.png\" alt=\"Alternate Text\" />\r\n      </div>\r\n      <div class=\"login-logo\">\r\n        <img class=\"logo\" src=\"/assets/dist/img/loginActivProb.png\" alt=\"سامانه پایش شبکه\" style=\"margin: auto; height: 150px\" />\r\n      </div><!-- /.login-logo -->\r\n\r\n      <form [formGroup]=\"loginForm\" (ngSubmit)=\"onSubmit()\" id=\"form1\" *ngIf=\"!showForgetPass\">\r\n        <div class=\"form-group has-feedback\">\r\n          <input type=\"email\" class=\"form-control\" placeholder=\"{{ 'TestDataUserName' | translate }}\" formControlName=\"username\">\r\n          <span class=\"fa fa-user form-control-feedback\"></span>\r\n        </div>\r\n        <div class=\"form-group has-feedback\">\r\n          <input type=\"password\" class=\"form-control\" placeholder=\"{{ 'TestDataPassword' | translate }}\" formControlName=\"password\">\r\n          <span class=\"fa fa-lock form-control-feedback\"></span>\r\n        </div>\r\n        <div class=\"form-check\">\r\n          <label>\r\n            <input type=\"checkbox\" name=\"rememberMe\" formControlName=\"rememberMe\"> Remember me\r\n          </label>\r\n        </div>\r\n        <div class=\"row\">\r\n          <!-- /.col -->\r\n          <div class=\"col-xs-12\">\r\n            <button type=\"submit\" class=\"btn btn-warning btn-block btn-flat\" translate>Login</button>\r\n          </div><!-- /.col -->\r\n        </div>\r\n      </form>\r\n\r\n      <div *ngIf=\"showForgetPass\">\r\n        <div class=\"form-group has-feedback\">\r\n          <input type=\"email\" class=\"form-control\" placeholder=\"{{ 'Email' | translate }}\" [(ngModel)]=\"email\">\r\n          <span class=\"fa fa-envelope form-control-feedback\"></span>\r\n        </div>\r\n        <div class=\"row\">\r\n          <!-- /.col -->\r\n          <div class=\"col-xs-12\">\r\n            <button type=\"submit\" class=\"btn btn-warning btn-block btn-flat\" translate>SendNewPassword</button>\r\n          </div><!-- /.col -->\r\n        </div>\r\n      </div>\r\n      <br />\r\n      <button type=\"button\" class=\"btn btn-link text-decoration-none\" (click)=\"showForgetPass = !showForgetPass\" ng-model=\"showForgetPass\" style=\"text-decoration:none;\" translate>ForgotPassword</button>\r\n\r\n    </div><!-- /.login-box-body -->\r\n  </div><!-- /.login-box -->\r\n</div>\r\n"
 
 /***/ }),
 
@@ -121,9 +121,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/router */ "./node_modules/@angular/router/fesm2015/router.js");
 /* harmony import */ var _angular_forms__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/forms */ "./node_modules/@angular/forms/fesm2015/forms.js");
 /* harmony import */ var _Shared_services_authentication_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../Shared/services/authentication.service */ "./src/app/Shared/services/authentication.service.ts");
-/* harmony import */ var _Shared_models_user__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./../../Shared/models/user */ "./src/app/Shared/models/user.ts");
-/* harmony import */ var ngx_toastr__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ngx-toastr */ "./node_modules/ngx-toastr/fesm2015/ngx-toastr.js");
-/* harmony import */ var _ngx_translate_core__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @ngx-translate/core */ "./node_modules/@ngx-translate/core/fesm2015/ngx-translate-core.js");
+/* harmony import */ var ngx_toastr__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ngx-toastr */ "./node_modules/ngx-toastr/fesm2015/ngx-toastr.js");
+/* harmony import */ var _ngx_translate_core__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @ngx-translate/core */ "./node_modules/@ngx-translate/core/fesm2015/ngx-translate-core.js");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -139,7 +138,6 @@ var __metadata = (undefined && undefined.__metadata) || function (k, v) {
 
 
 
-
 let LoginComponent = class LoginComponent {
     constructor(formBuilder, route, router, authenticationService, toastrService, translate) {
         this.formBuilder = formBuilder;
@@ -149,21 +147,27 @@ let LoginComponent = class LoginComponent {
         this.toastrService = toastrService;
         this.translate = translate;
         this.submitted = false;
+        this.u = {
+            username: "",
+            password: "",
+            rememberMe: false
+        };
         // redirect to home if already logged in
         if (this.authenticationService.currentUser) {
             this.router.navigate(['/']);
         }
-    }
-    ngOnInit() {
-        //this.authenticationService.logout();
         this.loginForm = this.formBuilder.group({
             username: ['', _angular_forms__WEBPACK_IMPORTED_MODULE_2__["Validators"].required],
-            password: ['', _angular_forms__WEBPACK_IMPORTED_MODULE_2__["Validators"].required]
+            password: ['', _angular_forms__WEBPACK_IMPORTED_MODULE_2__["Validators"].required],
+            rememberMe: [true]
         });
+    }
+    ngOnInit() {
+        //reset login status
+        //this.authenticationService.logout();
         // get return url from route parameters or default to '/'
         this.returnUrl = this.route.snapshot.queryParams['returnUrl'];
     }
-    // convenience getter for easy access to form fields
     get f() { return this.loginForm.controls; }
     onSubmit() {
         this.submitted = true;
@@ -171,18 +175,17 @@ let LoginComponent = class LoginComponent {
         if (this.loginForm.invalid) {
             return;
         }
-        var u = new _Shared_models_user__WEBPACK_IMPORTED_MODULE_4__["User"]();
-        u = { firstName: "", lastName: "", username: this.f.username.value, password: this.f.password.value, id: 0, LoggedIn: false };
-        this.authenticationService.login(u)
-            //.pipe(first())
-            .subscribe(data => {
-            if (data) {
+        this.u.username = this.f.username.value;
+        this.u.password = this.f.password.value;
+        this.u.rememberMe = this.f.rememberMe.value;
+        this.authenticationService.login(this.u)
+            .subscribe(isLoggedIn => {
+            if (isLoggedIn) {
                 if (this.returnUrl) {
                     this.router.navigate([this.returnUrl]);
                 }
                 else {
                     this.router.navigate(["/"]);
-                    //this.router.navigate(["/machine"]);
                 }
                 //this.toastrService.success('Success login', 'Welcome!', { timeOut: 2000 });
             }
@@ -193,6 +196,12 @@ let LoginComponent = class LoginComponent {
         }, error => {
             console.log("Login error", error);
             //this.toastrService.warning('{{WrongUsernameOrPassword | translate}}', 'Warning');
+            if (error.status === 401) {
+                console.log("Invalid User name or Password. Please try again.");
+            }
+            else {
+                console.log(`${error.statusText}: ${error.message}`);
+            }
             this.toastrService.warning(this.translate.instant('WrongUsernameOrPassword'), this.translate.instant('Warning'));
         });
     }
@@ -210,8 +219,8 @@ LoginComponent.ctorParameters = () => [
     { type: _angular_router__WEBPACK_IMPORTED_MODULE_1__["ActivatedRoute"] },
     { type: _angular_router__WEBPACK_IMPORTED_MODULE_1__["Router"] },
     { type: _Shared_services_authentication_service__WEBPACK_IMPORTED_MODULE_3__["AuthenticationService"] },
-    { type: ngx_toastr__WEBPACK_IMPORTED_MODULE_5__["ToastrService"] },
-    { type: _ngx_translate_core__WEBPACK_IMPORTED_MODULE_6__["TranslateService"] }
+    { type: ngx_toastr__WEBPACK_IMPORTED_MODULE_4__["ToastrService"] },
+    { type: _ngx_translate_core__WEBPACK_IMPORTED_MODULE_5__["TranslateService"] }
 ];
 LoginComponent = __decorate([
     Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"])({
@@ -224,26 +233,10 @@ LoginComponent = __decorate([
         _angular_router__WEBPACK_IMPORTED_MODULE_1__["ActivatedRoute"],
         _angular_router__WEBPACK_IMPORTED_MODULE_1__["Router"],
         _Shared_services_authentication_service__WEBPACK_IMPORTED_MODULE_3__["AuthenticationService"],
-        ngx_toastr__WEBPACK_IMPORTED_MODULE_5__["ToastrService"],
-        _ngx_translate_core__WEBPACK_IMPORTED_MODULE_6__["TranslateService"]])
+        ngx_toastr__WEBPACK_IMPORTED_MODULE_4__["ToastrService"],
+        _ngx_translate_core__WEBPACK_IMPORTED_MODULE_5__["TranslateService"]])
 ], LoginComponent);
 
-
-
-/***/ }),
-
-/***/ "./src/app/Shared/models/user.ts":
-/*!***************************************!*\
-  !*** ./src/app/Shared/models/user.ts ***!
-  \***************************************/
-/*! exports provided: User */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "User", function() { return User; });
-class User {
-}
 
 
 /***/ })

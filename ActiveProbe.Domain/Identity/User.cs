@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using System;
 using ActiveProbe.Domain.AuditableEntity;
+using ActiveProbe.Domain.Models;
 
 namespace ActiveProbe.Domain.Identity
 {
@@ -47,12 +48,13 @@ namespace ActiveProbe.Domain.Identity
 
         public bool IsActive { get; set; } = true;
 
-        public virtual ICollection<UserToken> UserTokens { get; set; }
+        public virtual ICollection<UserToken> UserTokens { get; set; } //don't use.but neccessary
 
         public virtual ICollection<UserRole> Roles { get; set; }
 
         public virtual ICollection<UserLogin> Logins { get; set; }
 
         public virtual ICollection<UserClaim> Claims { get; set; }
+        public virtual ICollection<Token> Tokens { get; set; }
     }
 }

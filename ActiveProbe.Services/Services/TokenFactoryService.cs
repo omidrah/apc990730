@@ -36,9 +36,9 @@ namespace ActiveProbe.Services
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<JwtTokensData> CreateJwtTokensAsync(User user)
+        public async Task<JwtTokensData> CreateJwtTokensAsync(User user,string roleClaimType)
         {
-            var (accessToken, claims) = await createAccessTokenAsync(user);
+            var (accessToken, claims) = await createAccessTokenAsync(user,roleClaimType);
             var (refreshTokenValue, refreshTokenSerial) = createRefreshToken();
             return new JwtTokensData
             {
@@ -111,7 +111,7 @@ namespace ActiveProbe.Services
             return decodedRefreshTokenPrincipal?.Claims?.FirstOrDefault(c => c.Type == ClaimTypes.SerialNumber)?.Value;
         }
 
-        private async Task<(string AccessToken, IEnumerable<Claim> Claims)> createAccessTokenAsync(User user)
+        private async Task<(string AccessToken, IEnumerable<Claim> Claims)> createAccessTokenAsync(User user, string roleClaimType)
         {
             var claims = new List<Claim>
             {
@@ -132,9 +132,22 @@ namespace ActiveProbe.Services
 
             // add roles
             var roles =  _rolesService.FindUserRoles(user.Id);
-            foreach (var role in roles)
+            if (roles != null)
             {
-                claims.Add(new Claim(ClaimTypes.Role, role.Name, ClaimValueTypes.String, _configuration.Value.Issuer));
+                foreach (var role in roles)
+                {
+                    claims.Add(new Claim(ClaimTypes.Role, role.Name, ClaimValueTypes.String, _configuration.Value.Issuer));
+                    if (role.Claims != null)
+                    {
+                        var currentRoleClaimValues = role.Claims.Where(roleClaim => roleClaim.ClaimType == roleClaimType)
+                                                    .Select(roleClaim => roleClaim.ClaimValue)
+                                                    .ToList();
+                        foreach (var claimValue in currentRoleClaimValues)
+                        {
+                            claims.Add(new Claim("Access",claimValue, roleClaimType));
+                        }
+                    }
+                }
             }
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.Value.Key));

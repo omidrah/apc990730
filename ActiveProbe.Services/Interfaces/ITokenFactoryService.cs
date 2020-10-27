@@ -7,7 +7,7 @@ namespace ActiveProbe.Services.Interfaces
 {
     public interface ITokenFactoryService
     {
-        Task<JwtTokensData> CreateJwtTokensAsync(User user);
+        Task<JwtTokensData> CreateJwtTokensAsync(User user,string roleClaimType);
         string GetRefreshTokenSerial(string refreshTokenValue);
     }
 }

@@ -12,19 +12,29 @@ import { AuthenticationService } from '../Shared/services/authentication.service
 import { Router } from '@angular/router';
 var AppheaderComponent = /** @class */ (function () {
     function AppheaderComponent(auth, route) {
-        //auth.getLoggedInUser.subscribe(user => this.setUser(user));
         this.auth = auth;
         this.route = route;
-        this.setUser(JSON.parse(sessionStorage.getItem("currentUser")));
+        this.isLoggedIn = false;
+        this.displayName = '';
     }
     AppheaderComponent.prototype.ngOnInit = function () {
+        var _this = this;
+        this.subscription = this.auth.currentUser.subscribe(function (st) {
+            _this.isLoggedIn = st;
+            if (st) {
+                var NCuser = _this.auth.getAuthUserDisplayName();
+                _this.displayName = NCuser ? NCuser : "";
+            }
+        });
+    };
+    AppheaderComponent.prototype.ngOnDestroy = function () {
+        if (this.subscription) {
+            this.subscription.unsubscribe();
+        }
     };
     AppheaderComponent.prototype.logout = function () {
         this.auth.logout();
         this.route.navigate(['login']);
-    };
-    AppheaderComponent.prototype.setUser = function (user) {
-        this.user = user;
     };
     AppheaderComponent = __decorate([
         Component({

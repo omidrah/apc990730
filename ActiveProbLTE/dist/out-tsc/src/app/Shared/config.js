@@ -1,7 +1,7 @@
 import { InjectionToken } from "@angular/core";
 export var APP_CONFIG = new InjectionToken("config");
 export var AppConfig = {
-    apiUrl: "/185.192.112.74/",
+    apiUrl: "http://185.192.112.74/",
     loginPath: "login",
     logoutPath: "logout",
     refreshTokenPath: "RefreshToken",

@@ -65,18 +65,11 @@ namespace ActiveProbeCore
             {
                 configuration.RootPath = "ClientApp/dist";
             });
-            AddCustomOptions(services);
-            services.AddDbContext<ActiveProbeCoreContext>(
-                //options => options.UseSqlServer(Configuration.GetConnectionString("localConnection"))
-                options => options.UseSqlServer(Util.ConnectionStrings)
-            );
+            AddCustomOptions(services);           
             CustomIdentity(services);
             CustomDIContainer(services);
-
             CustomJwt(services);
             CustomAuthorize(services);
-            //CustomCookie(services);
-
             services.AddHttpContextAccessor();
             services.AddCors();
             services.AddControllers().AddNewtonsoftJson(x =>
@@ -87,9 +80,13 @@ namespace ActiveProbeCore
         }
         public void AddCustomOptions(IServiceCollection services)
         {
-            //Util.ConnectionStrings = Configuration.GetConnectionString("localConnection");
-            Util.ConnectionStrings = Configuration.GetConnectionString("localConnection");
 
+          
+            Util.ConnectionStrings = Configuration.GetConnectionString("localConnection");
+            services.AddDbContext<ActiveProbeCoreContext>(
+             //options => options.UseSqlServer(Configuration.GetConnectionString("localConnection"))
+             options => options.UseSqlServer(Util.ConnectionStrings)
+             );
             services.AddOptions<BearerTokens>()
                .Bind(Configuration.GetSection("Project:BearerTokens"))
                .Validate(bearerTokens =>
@@ -97,8 +94,7 @@ namespace ActiveProbeCore
                    return bearerTokens.AccessTokenExpirationMinutes < bearerTokens.RefreshTokenExpirationMinutes;
                },
                "RefreshTokenExpirationMinutes is less than AccessTokenExpirationMinutes. Obtaining new tokens using the refresh token should happen only if the access token has expired.");
-            services.AddOptions<ApiSettings>()
-                    .Bind(Configuration.GetSection("Project:ApiSettings"));
+            services.AddOptions<ApiSettings>().Bind(Configuration.GetSection("Project:ApiSettings"));
 
             services.Configure<ConfigurationsVm>(Configuration.GetSection(ConfigurationsVm.Project));
         }
@@ -163,22 +159,7 @@ namespace ActiveProbeCore
                    });
 
             });
-        }
-        private void CustomCookie(IServiceCollection services)
-        {
-            services.AddAuthentication(options =>
-            {
-                options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-            });
-            services.ConfigureApplicationCookie(identityOptionsCookies =>
-            {
-                var provider = services.BuildServiceProvider();
-                setCookieOptions(provider, identityOptionsCookies);
-            });
-
-        }
+        }      
         private void CustomDIContainer(IServiceCollection services)
         {
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -218,9 +199,6 @@ namespace ActiveProbeCore
             services.AddScoped<ITokenFactoryService, TokenFactoryService>();
 
             //ActiveProbe
-
-            services.AddScoped<ICookieValidatorService, CookieValidatorService>();
-
             services.AddScoped<ILogErrService, LogErrService>();
             services.AddScoped<IUnitOfWork, ActiveProbeCoreContext>();
             services.AddScoped<ITestService, TestService>();
@@ -293,27 +271,7 @@ namespace ActiveProbeCore
               .AddDefaultTokenProviders()
               .AddTokenProvider<ConfirmEmailDataProtectorTokenProvider<User>>(EmailConfirmationTokenProviderName);
         }
-        private void setCookieOptions(ServiceProvider provider, CookieAuthenticationOptions idnCookie)
-        {
-            idnCookie.Cookie.Name = "kkom-activeprobe";
-            idnCookie.Cookie.HttpOnly = true;
-            idnCookie.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
-            idnCookie.Cookie.SameSite = SameSiteMode.Lax;
-            idnCookie.Cookie.IsEssential = true; //  this cookie will always be stored regardless of the user's consent
-            idnCookie.ExpireTimeSpan = TimeSpan.FromDays(5);
-            idnCookie.SlidingExpiration = true;
-            idnCookie.LoginPath = "/login";
-            idnCookie.LogoutPath = "/logout";
-            idnCookie.AccessDeniedPath = "/admin";
-            idnCookie.Events = new CookieAuthenticationEvents
-            {
-                OnValidatePrincipal = context =>
-                {
-                    var cookieValidatorService = context.HttpContext.RequestServices.GetRequiredService<ICookieValidatorService>();
-                    return cookieValidatorService.ValidateAsync(context);
-                }
-            };
-        }
+       
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())

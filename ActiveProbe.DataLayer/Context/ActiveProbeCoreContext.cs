@@ -14,6 +14,9 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using ActiveProbe.Utils.Extentions;
 using ASPNETCoreIdentitySample.DataLayer.Config;
+using Microsoft.AspNetCore.Identity;
+using Org.BouncyCastle.Math.EC.Rfc7748;
+
 namespace ActiveProbe.DataLayer.Context
 {
     public partial class ActiveProbeCoreContext :
@@ -33,6 +36,7 @@ namespace ActiveProbe.DataLayer.Context
         public virtual DbSet<AppLogItem> AppLogItems { get; set; }        
         public virtual DbSet<AppDataProtectionKey> AppDataProtectionKeys { get; set; }
         public virtual DbSet<ActiveProbeParams> ActiveProbeParams { get; set; }
+        public virtual DbSet<Token> Tokens { get; set; }
         public virtual DbSet<Band> Band { get; set; }
         public virtual DbSet<Channel> Channel { get; set; }
         public virtual DbSet<Command> Command { get; set; }
@@ -122,6 +126,10 @@ namespace ActiveProbe.DataLayer.Context
                     .HasMaxLength(100);
             });
 
+            modelBuilder.Entity<Token>(entity => {
+                entity.HasKey(x => x.Id);
+                entity.HasOne(x => x.User).WithMany(x => x.Tokens).HasForeignKey(x => x.UserId);
+            });
             modelBuilder.Entity<RecievedCommand>(entity =>
             {
                 entity.HasKey(x => x.Id);

@@ -425,11 +425,16 @@ namespace ActiveProbe.DataLayer.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("UserId1")
+                        .HasColumnType("int");
+
                     b.HasKey("LoginProvider", "ProviderKey");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AppUserLogins");
+                    b.HasIndex("UserId1");
+
+                    b.ToTable("AspNetUserLogins");
                 });
 
             modelBuilder.Entity("ActiveProbe.Domain.Identity.UserRole", b =>
@@ -514,12 +519,17 @@ namespace ActiveProbe.DataLayer.Migrations
                     b.Property<DateTime?>("ModifiedDateTime")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("UserId1")
+                        .HasColumnType("int");
+
                     b.Property<string>("Value")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("AppUserTokens");
+                    b.HasIndex("UserId1");
+
+                    b.ToTable("AspNetUserTokens");
                 });
 
             modelBuilder.Entity("ActiveProbe.Domain.Models.ActiveProbeParams", b =>
@@ -3103,6 +3113,38 @@ namespace ActiveProbe.DataLayer.Migrations
                     b.ToTable("TestType");
                 });
 
+            modelBuilder.Entity("ActiveProbe.Domain.Models.Token", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTimeOffset>("AccessTokenExpiresDateTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("AccessTokenHash")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("RefreshTokenExpiresDateTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("RefreshTokenIdHash")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RefreshTokenIdHashSource")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Tokens");
+                });
+
             modelBuilder.Entity("ActiveProbe.Domain.Models.ZoneKml", b =>
                 {
                     b.Property<int>("Id")
@@ -3199,11 +3241,15 @@ namespace ActiveProbe.DataLayer.Migrations
 
             modelBuilder.Entity("ActiveProbe.Domain.Identity.UserLogin", b =>
                 {
-                    b.HasOne("ActiveProbe.Domain.Identity.User", "User")
-                        .WithMany("Logins")
+                    b.HasOne("ActiveProbe.Domain.Identity.User", null)
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("ActiveProbe.Domain.Identity.User", "User")
+                        .WithMany("Logins")
+                        .HasForeignKey("UserId1");
                 });
 
             modelBuilder.Entity("ActiveProbe.Domain.Identity.UserRole", b =>
@@ -3223,11 +3269,15 @@ namespace ActiveProbe.DataLayer.Migrations
 
             modelBuilder.Entity("ActiveProbe.Domain.Identity.UserToken", b =>
                 {
-                    b.HasOne("ActiveProbe.Domain.Identity.User", "User")
-                        .WithMany("UserTokens")
+                    b.HasOne("ActiveProbe.Domain.Identity.User", null)
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("ActiveProbe.Domain.Identity.User", "User")
+                        .WithMany("UserTokens")
+                        .HasForeignKey("UserId1");
                 });
 
             modelBuilder.Entity("ActiveProbe.Domain.Models.Command", b =>
@@ -3398,6 +3448,15 @@ namespace ActiveProbe.DataLayer.Migrations
                         .WithMany("SyncDetail")
                         .HasForeignKey("PsyncId")
                         .HasConstraintName("FK_SyncDetail_SyncMaster")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ActiveProbe.Domain.Models.Token", b =>
+                {
+                    b.HasOne("ActiveProbe.Domain.Identity.User", "User")
+                        .WithMany("Tokens")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

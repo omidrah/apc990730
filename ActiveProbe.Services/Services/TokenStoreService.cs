@@ -1,13 +1,12 @@
 ﻿using ActiveProbe.DataLayer.Context;
 using ActiveProbe.Domain.Identity;
+using ActiveProbe.Domain.Models;
 using ActiveProbe.Services.Interfaces;
 using ActiveProbe.Utils.ViewModel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace ActiveProbe.Services
@@ -16,7 +15,7 @@ namespace ActiveProbe.Services
     {
         private readonly ISecurityService _securityService;
         private readonly IUnitOfWork _uow;
-        private readonly DbSet<UserToken> _tokens;
+        private readonly DbSet<Token> _tokens;
         private readonly IOptionsSnapshot<BearerTokens> _configuration;
         private readonly ITokenFactoryService _tokenFactoryService;
         public TokenStoreService(
@@ -27,12 +26,12 @@ namespace ActiveProbe.Services
         {
             _uow = uow ?? throw new ArgumentNullException(nameof(_uow));
             _securityService = securityService ??throw new ArgumentNullException(nameof(_securityService));
-            _tokens = _uow.Set<UserToken>();
+            _tokens = _uow.Set<Token>();
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             _tokenFactoryService = tokenFactoryService ?? throw new ArgumentNullException(nameof(tokenFactoryService));
         }
 
-        public async Task AddUserTokenAsync(UserToken userToken)
+        public async Task AddUserTokenAsync(Token userToken)
         {
             if (!_configuration.Value.AllowMultipleLoginsFromTheSameUser)
             {
@@ -45,9 +44,9 @@ namespace ActiveProbe.Services
         public async Task AddUserTokenAsync(User user, string refreshTokenSerial, string accessToken, string refreshTokenSourceSerial)
         {
             var now = DateTimeOffset.UtcNow;
-            var token = new UserToken
+            var token = new Token
             {
-                UserId = user.Id,
+                User= user,
                 // Refresh token handles should be treated as secrets and should be stored hashed
                 RefreshTokenIdHash = _securityService.GetSha256Hash(refreshTokenSerial),
                 RefreshTokenIdHashSource = string.IsNullOrWhiteSpace(refreshTokenSourceSerial) ?
@@ -111,17 +110,17 @@ namespace ActiveProbe.Services
             await DeleteExpiredTokensAsync();
         }
 
-        public Task<UserToken> FindTokenAsync(string refreshTokenValue)
+        public Task<Token> FindTokenAsync(string refreshTokenValue)
         {
             if (string.IsNullOrWhiteSpace(refreshTokenValue))
             {
-                return Task.FromResult<UserToken>(null);
+                return Task.FromResult<Token>(null);
             }
 
             var refreshTokenSerial = _tokenFactoryService.GetRefreshTokenSerial(refreshTokenValue);
             if (string.IsNullOrWhiteSpace(refreshTokenSerial))
             {
-                return Task.FromResult<UserToken>(null);
+                return Task.FromResult<Token>(null);
             }
 
             var refreshTokenIdHash = _securityService.GetSha256Hash(refreshTokenSerial);

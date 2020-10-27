@@ -57,7 +57,8 @@ namespace ActiveProbe.Services
 
         public IList<Role> FindUserRoles(int userId)
         {
-            var userRolesQuery = from role in Roles
+            var userRolesQuery = from role in Roles.Include(x=>x.Claims)
+
                                  from user in role.Users
                                  where user.UserId == userId
                                  select role;

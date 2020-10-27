@@ -20,15 +20,15 @@
         <li class="dropdown user user-menu">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
             <img src="assets/dist/img/user2-160x160.jpg" class="user-image" alt="User Image">
-            <span class="hidden-xs" *ngIf="user">{{user.firstName}} {{user.lastName}}</span>
+            <span class="hidden-xs" *ngIf="isLoggedIn">{{displayName}}</span>
           </a>
           <ul class="dropdown-menu">
             <!-- User image -->
             <li class="user-header">
               <img src="assets/dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
 
-              <p *ngIf="user">
-                {{user.firstName}} {{user.lastName}}
+              <p *ngIf="isLoggedIn">
+                {{displayName}}
                 <small>مدیریت کل سایت</small>
               </p>
             </li>

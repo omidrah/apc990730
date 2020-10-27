@@ -126,6 +126,7 @@
   "DeviceUpdateRegisteredSomeUpdateOverWrite": "All Device Update Registered and some Device has Previous update and overWrite them",
   "InterferenceTestDateRangeConfirmMessage": "Interference within test date range.Would you like to replace the new test ?",
   "InterferenceGroupTestDateRangeConfirmMessage": "Interference with group test date range. Would you like to replace the new test ?",
+  "InterferenceDeviceTestAndGroupTestDateRangeConfirmMessage": "Interference with device test and group test date range. Would you like to replace the new test ?",
   "ZoneCreationCompletedSuccessfully": "Zone Creation Completed Successfully",
   "ZoneDeleteCompletedSuccessfully": "Zone Delete Completed Successfully",
 
@@ -218,6 +219,8 @@
   "OnTime": "On Time",
   "OnceADay": "Once a day",
   "InTimeRange": "In Time Range",
+  "MaxSend": "Max Send",
+  "TimeIntervalToNextSend": "Time interval to next send(min)",
 
   "NameIsRequired": "Name is Required.",
   "SerialNoIsRequired": "Serial No is Required.",
@@ -279,6 +282,8 @@
   "SearchEndDateIsRequired": "Search End Date is Required.",
   "MathematicalSymbolIsRequired": "Condition is Required.",
   "OtherSideOfTheConditionIsRequired": "other side of the condition is Required.",
+  "MaxSendIsRequired": "Max Send is Required.",
+  "TimeIntervalToNextSendIsRequired": "Time interval to next send is Required.",
 
   "SelectMachineTypePlease": "Select Type Please",
   "SelectTestPlease": "Select Test Please",

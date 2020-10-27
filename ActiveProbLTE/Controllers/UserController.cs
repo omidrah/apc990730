@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using ActiveProbe.DataLayer.Context;
 using Microsoft.AspNetCore.Authorization;
+using ActiveProbe.Services;
 
 namespace ActiveProbeCore.Controllers
 {
@@ -47,7 +48,6 @@ namespace ActiveProbeCore.Controllers
         [Route("[action]")]
         public async Task<IActionResult> Authenticate(loginVm usr)
         {
-
             var user = await _userManager.FindByNameAsync(usr.UserName).ConfigureAwait(false);
             if (user == null)
             {
@@ -61,13 +61,17 @@ namespace ActiveProbeCore.Controllers
             if (result.Succeeded)
             {
                 _logger.LogInformation("User logged in.");
-                var result2 = await _tokenFactoryService.CreateJwtTokensAsync(user).ConfigureAwait(false);
+                var result2 = await _tokenFactoryService.CreateJwtTokensAsync(user, ConstantPolicies.dynKkomAuthorizationClaimType).ConfigureAwait(false);
                 await _tokenStore.AddUserTokenAsync(user, result2.RefreshTokenSerial, result2.AccessToken, null).ConfigureAwait(false);
                 await _uow.SaveChangesAsync();
                 return Ok(new { access_token = result2.AccessToken, refresh_token = result2.RefreshToken });
             }
-            return BadRequest(new { msg = "رمز عبور یا نام کاربری وارد شده صحیح نمی باشد.", state = "failed" });
+            return BadRequest(new APIResult<bool>{ 
+                          Succeed=true, 
+                          Message="Invalid username or password", Result=false});
         }
+        [HttpPost]
+        [Route("[action]")]
         public async Task<bool> LogOff(string refreshToken)
         {
             var claimsIdentity = this.User.Identity as ClaimsIdentity;
@@ -81,7 +85,7 @@ namespace ActiveProbeCore.Controllers
         [AllowAnonymous]
         [IgnoreAntiforgeryToken]
         [HttpPost("[action]")]
-        public async Task<IActionResult> RefreshToken([FromBody] Token model)
+        public async Task<IActionResult> RefreshToken([FromBody] Token2 model)
         {
             var refreshTokenValue = model.RefreshToken;
             if (string.IsNullOrWhiteSpace(refreshTokenValue))
@@ -94,7 +98,7 @@ namespace ActiveProbeCore.Controllers
             {
                 return Unauthorized();
             }
-            var result = await _tokenFactoryService.CreateJwtTokensAsync(token.User).ConfigureAwait(false);
+            var result = await _tokenFactoryService.CreateJwtTokensAsync(token.User,ConstantPolicies.dynKkomAuthorizationClaimType).ConfigureAwait(false);
             await _tokenStore.AddUserTokenAsync(token.User, result.RefreshTokenSerial, result.AccessToken, _tokenFactoryService.GetRefreshTokenSerial(refreshTokenValue)).ConfigureAwait(false);
             await _uow.SaveChangesAsync().ConfigureAwait(false);
             return Ok(new { access_token = result.AccessToken, refresh_token = result.RefreshToken });

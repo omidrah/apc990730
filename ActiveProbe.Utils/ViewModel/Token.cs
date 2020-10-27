@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace ActiveProbe.Utils.ViewModel
 {
-    public class Token
+    public class Token2
     {
         [JsonPropertyName("refreshToken")]
         [Required]

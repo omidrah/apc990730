@@ -126,6 +126,7 @@
   "DeviceUpdateRegisteredSomeUpdateOverWrite": "به روزرسانی همه دستگاه ثبت شد، برخی از دستگاه ها به روزرسانی قبلی را انجام داده بازنویسی شدند.",
   "InterferenceTestDateRangeConfirmMessage": "تداخل در محدوده تاریخ آزمون. آیا می خواهید آزمون جدید را جایگزین کنید ؟",
   "InterferenceGroupTestDateRangeConfirmMessage": "تداخل در محدوده تاریخ آزمون گروهی. آیا می خواهید آزمون جدید را جایگزین کنید ؟",
+  "InterferenceDeviceTestAndGroupTestDateRangeConfirmMessage": "تداخل در محدوده تاریخ آزمون دستگاه و آزمون گروهی. آیا می خواهید آزمون جدید را جایگزین کنید ؟",
   "ZoneCreationCompletedSuccessfully": "ایجاد منطقه با موفقیت انجام شد",
   "ZoneDeleteCompletedSuccessfully": "حذف منطقه با موفقیت انجام شد",
 
@@ -218,6 +219,8 @@
   "OnTime": "لحظه ای",
   "OnceADay": "روزی یک بار",
   "InTimeRange": "در بازه زمانی",
+  "MaxSend": "حد اکثر تعداد ارسال",
+  "TimeIntervalToNextSend": "فاصله زمانی تا ارسال بعدی(min)",
 
   "NameIsRequired": "نام دستگاه اجباری است.",
   "SerialNoIsRequired": "شماره سریال اجباری است.",
@@ -279,6 +282,8 @@
   "SearchEndDateIsRequired": "بازه پایان جستجو اجباری است",
   "MathematicalSymbolIsRequired": "شرط اجباری است",
   "OtherSideOfTheConditionIsRequired": "طرف دیگر شرایط اجباری است",
+  "MaxSendIsRequired": "حد اکثر تعداد ارسال اجباری است",
+  "TimeIntervalToNextSendIsRequired": "فاصله زمانی تا ارسال بعدی اجباری است",
 
   "SelectMachineTypePlease": "نوع دستگاه را انتخاب نمایید.",
   "SelectTestPlease": "لطفا تست را انتخاب نمایید.",

@@ -430,6 +430,52 @@ module.exports = webpackAsyncContext;
 
 /***/ }),
 
+/***/ "./src/app/Shared/config.ts":
+/*!**********************************!*\
+  !*** ./src/app/Shared/config.ts ***!
+  \**********************************/
+/*! exports provided: APP_CONFIG, AppConfig */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "APP_CONFIG", function() { return APP_CONFIG; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "AppConfig", function() { return AppConfig; });
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm2015/core.js");
+
+let APP_CONFIG = new _angular_core__WEBPACK_IMPORTED_MODULE_0__["InjectionToken"]("config");
+const AppConfig = {
+    apiUrl: "http://185.192.112.74/",
+    loginPath: "login",
+    logoutPath: "logout",
+    refreshTokenPath: "RefreshToken",
+    accessTokenObjectKey: "access_token",
+    refreshTokenObjectKey: "refresh_token",
+    adminRoleName: 'Admin'
+};
+
+
+/***/ }),
+
+/***/ "./src/app/Shared/models/auth-token-type.ts":
+/*!**************************************************!*\
+  !*** ./src/app/Shared/models/auth-token-type.ts ***!
+  \**************************************************/
+/*! exports provided: AuthTokenType */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "AuthTokenType", function() { return AuthTokenType; });
+var AuthTokenType;
+(function (AuthTokenType) {
+    AuthTokenType[AuthTokenType["AccessToken"] = 0] = "AccessToken";
+    AuthTokenType[AuthTokenType["RefreshToken"] = 1] = "RefreshToken";
+})(AuthTokenType || (AuthTokenType = {}));
+
+
+/***/ }),
+
 /***/ "./src/app/Shared/models/material-persian-date-adapter.ts":
 /*!****************************************************************!*\
   !*** ./src/app/Shared/models/material-persian-date-adapter.ts ***!
@@ -815,8 +861,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "AuthenticationService", function() { return AuthenticationService; });
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm2015/core.js");
 /* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/common/http */ "./node_modules/@angular/common/fesm2015/http.js");
-/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rxjs */ "./node_modules/rxjs/_esm2015/index.js");
-/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! rxjs/operators */ "./node_modules/rxjs/_esm2015/operators/index.js");
+/* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/router */ "./node_modules/@angular/router/fesm2015/router.js");
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! rxjs */ "./node_modules/rxjs/_esm2015/index.js");
+/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! rxjs/operators */ "./node_modules/rxjs/_esm2015/operators/index.js");
+/* harmony import */ var _config__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../config */ "./src/app/Shared/config.ts");
+/* harmony import */ var _models_auth_token_type__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../models/auth-token-type */ "./src/app/Shared/models/auth-token-type.ts");
+/* harmony import */ var _browser_storage_service__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./browser-storage.service */ "./src/app/Shared/services/browser-storage.service.ts");
+/* harmony import */ var _refresh_token_service__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./refresh-token.service */ "./src/app/Shared/services/refresh-token.service.ts");
+/* harmony import */ var _token_store_service__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./token-store.service */ "./src/app/Shared/services/token-store.service.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -826,54 +878,203 @@ var __decorate = (undefined && undefined.__decorate) || function (decorators, ta
 var __metadata = (undefined && undefined.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (undefined && undefined.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+
+
+
+
+
+
 
 
 
 
 let AuthenticationService = class AuthenticationService {
-    constructor(http) {
+    constructor(storageService, http, router, tokenStoreService, refreshTokenService, appConfig) {
+        this.storageService = storageService;
         this.http = http;
-        this.getLoggedInUser = new _angular_core__WEBPACK_IMPORTED_MODULE_0__["EventEmitter"]();
-        this.currentUserSubject = new rxjs__WEBPACK_IMPORTED_MODULE_2__["BehaviorSubject"](JSON.parse(sessionStorage.getItem('currentUser')));
+        this.router = router;
+        this.tokenStoreService = tokenStoreService;
+        this.refreshTokenService = refreshTokenService;
+        this.appConfig = appConfig;
+        this.currentUserSubject = new rxjs__WEBPACK_IMPORTED_MODULE_3__["BehaviorSubject"](false);
         this.currentUser = this.currentUserSubject.asObservable();
+        this.updateStatusOnPageRefresh();
+        this.refreshTokenService.scheduleRefreshToken(this.isAuthUserLoggedIn(), false);
+    }
+    updateStatusOnPageRefresh() {
+        this.currentUserSubject.next(this.isAuthUserLoggedIn());
     }
     login(u) {
-        return this.http.post('api/user/authenticate', u)
-            .pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["map"])(user => {
-            // login successful if there's a jwt token in the response
-            if (user && user.loggedIn) {
-                // store user details and jwt token in local storage to keep user logged in between page refreshes
-                sessionStorage.setItem('currentUser', JSON.stringify(user));
-                this.currentUserSubject.next(user);
-                this.getLoggedInUser.emit(user);
-                return true;
-            }
-            else {
-                sessionStorage.removeItem('currentUser');
-                this.currentUserSubject.next(null);
-                this.getLoggedInUser.emit(null);
+        const headers = new _angular_common_http__WEBPACK_IMPORTED_MODULE_1__["HttpHeaders"]({ "Content-Type": "application/json" });
+        return this.http.post('api/user/Authenticate', u, { headers: headers })
+            .pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_4__["map"])(user => {
+            this.storageService.setLocal("RememberMe", u.rememberMe);
+            if (!user) {
+                console.error("There is no `{'" + this.appConfig.accessTokenObjectKey +
+                    "':'...','" + this.appConfig.refreshTokenObjectKey + "':'...value...'}` response after login.");
+                this.currentUserSubject.next(false);
                 return false;
             }
+            this.tokenStoreService.storeLoginSession(user);
+            console.log("Logged-in user info", this.getAuthUser());
+            this.refreshTokenService.scheduleRefreshToken(true, true);
+            this.currentUserSubject.next(true);
+            return true;
         }));
     }
     logout() {
-        // remove user from local storage to log user out
-        sessionStorage.removeItem('currentUser');
-        this.currentUserSubject.next(null);
-        this.getLoggedInUser.emit(null);
+        const headers = new _angular_common_http__WEBPACK_IMPORTED_MODULE_1__["HttpHeaders"]({ "Content-Type": "application/json" });
+        const refreshToken = encodeURIComponent(this.tokenStoreService.getRawAuthToken(_models_auth_token_type__WEBPACK_IMPORTED_MODULE_6__["AuthTokenType"].RefreshToken));
+        return this.http.post('api/user/Logoff?refreshToken=' + refreshToken, { headers: headers })
+            .pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_4__["map"])(res => res || {}), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_4__["catchError"])((error) => Object(rxjs__WEBPACK_IMPORTED_MODULE_3__["throwError"])(error)), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_4__["finalize"])(() => {
+            this.tokenStoreService.deleteAuthTokens();
+            this.refreshTokenService.unscheduleRefreshToken(true);
+            this.currentUserSubject.next(false);
+            this.router.navigate(["/login"]);
+        }))
+            .subscribe(result => {
+            console.log("logout", result);
+        });
+    }
+    isAuthUserLoggedIn() {
+        return this.tokenStoreService.hasStoredAccessAndRefreshTokens() &&
+            !this.tokenStoreService.isAccessTokenTokenExpired();
+    }
+    getBearerAuthHeader() {
+        return new _angular_common_http__WEBPACK_IMPORTED_MODULE_1__["HttpHeaders"]({
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${this.tokenStoreService.getRawAuthToken(_models_auth_token_type__WEBPACK_IMPORTED_MODULE_6__["AuthTokenType"].AccessToken)}`
+        });
+    }
+    getAuthUser() {
+        if (!this.isAuthUserLoggedIn()) {
+            return null;
+        }
+        const decodedToken = this.tokenStoreService.getDecodedAccessToken();
+        const roles = this.tokenStoreService.getDecodedTokenRoles();
+        return Object.freeze({
+            userId: decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"],
+            userName: decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"],
+            displayName: decodedToken["DisplayName"],
+            roles: roles
+        });
+    }
+    isAuthUserInRoles(requiredRoles) {
+        const user = this.getAuthUser();
+        if (!user || !user.roles) {
+            return false;
+        }
+        if (user.roles.indexOf(this.appConfig.adminRoleName.toLowerCase()) >= 0) {
+            return true; // The `Admin` role has full access to every pages.
+        }
+        return requiredRoles.some(requiredRole => {
+            if (user.roles) {
+                return user.roles.indexOf(requiredRole.toLowerCase()) >= 0;
+            }
+            else {
+                return false;
+            }
+        });
+    }
+    isAuthUserInRole(requiredRole) {
+        return this.isAuthUserInRoles([requiredRole]);
     }
 };
 AuthenticationService.ctorParameters = () => [
-    { type: _angular_common_http__WEBPACK_IMPORTED_MODULE_1__["HttpClient"] }
+    { type: _browser_storage_service__WEBPACK_IMPORTED_MODULE_7__["BrowserStorageService"] },
+    { type: _angular_common_http__WEBPACK_IMPORTED_MODULE_1__["HttpClient"] },
+    { type: _angular_router__WEBPACK_IMPORTED_MODULE_2__["Router"] },
+    { type: _token_store_service__WEBPACK_IMPORTED_MODULE_9__["TokenStoreService"] },
+    { type: _refresh_token_service__WEBPACK_IMPORTED_MODULE_8__["RefreshTokenService"] },
+    { type: undefined, decorators: [{ type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Inject"], args: [_config__WEBPACK_IMPORTED_MODULE_5__["APP_CONFIG"],] }] }
 ];
-__decorate([
-    Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Output"])(),
-    __metadata("design:type", _angular_core__WEBPACK_IMPORTED_MODULE_0__["EventEmitter"])
-], AuthenticationService.prototype, "getLoggedInUser", void 0);
 AuthenticationService = __decorate([
     Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Injectable"])({ providedIn: 'root' }),
-    __metadata("design:paramtypes", [_angular_common_http__WEBPACK_IMPORTED_MODULE_1__["HttpClient"]])
+    __param(5, Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Inject"])(_config__WEBPACK_IMPORTED_MODULE_5__["APP_CONFIG"])),
+    __metadata("design:paramtypes", [_browser_storage_service__WEBPACK_IMPORTED_MODULE_7__["BrowserStorageService"],
+        _angular_common_http__WEBPACK_IMPORTED_MODULE_1__["HttpClient"], _angular_router__WEBPACK_IMPORTED_MODULE_2__["Router"],
+        _token_store_service__WEBPACK_IMPORTED_MODULE_9__["TokenStoreService"],
+        _refresh_token_service__WEBPACK_IMPORTED_MODULE_8__["RefreshTokenService"], Object])
 ], AuthenticationService);
+
+
+
+/***/ }),
+
+/***/ "./src/app/Shared/services/browser-storage.service.ts":
+/*!************************************************************!*\
+  !*** ./src/app/Shared/services/browser-storage.service.ts ***!
+  \************************************************************/
+/*! exports provided: BrowserStorageService */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "BrowserStorageService", function() { return BrowserStorageService; });
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm2015/core.js");
+var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+
+let BrowserStorageService = class BrowserStorageService {
+    getSession(key) {
+        const data = window.sessionStorage.getItem(key);
+        if (data) {
+            return JSON.parse(data);
+        }
+        else {
+            return null;
+        }
+    }
+    setSession(key, value) {
+        const data = value === undefined ? "" : JSON.stringify(value);
+        window.sessionStorage.setItem(key, data);
+    }
+    removeSession(key) {
+        window.sessionStorage.removeItem(key);
+    }
+    removeAllSessions() {
+        for (const key in window.sessionStorage) {
+            if (window.sessionStorage.hasOwnProperty(key)) {
+                this.removeSession(key);
+            }
+        }
+    }
+    getLocal(key) {
+        const data = window.localStorage.getItem(key);
+        if (data) {
+            return JSON.parse(data);
+        }
+        else {
+            return null;
+        }
+    }
+    setLocal(key, value) {
+        const data = value === undefined ? "" : JSON.stringify(value);
+        window.localStorage.setItem(key, data);
+    }
+    removeLocal(key) {
+        window.localStorage.removeItem(key);
+    }
+    removeAllLocals() {
+        for (const key in window.localStorage) {
+            if (window.localStorage.hasOwnProperty(key)) {
+                this.removeLocal(key);
+            }
+        }
+    }
+};
+BrowserStorageService = __decorate([
+    Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Injectable"])({
+        providedIn: 'root'
+    })
+], BrowserStorageService);
 
 
 
@@ -914,7 +1115,6 @@ let ConfigService = class ConfigService {
         this.currentConfigurationsSubject = new rxjs__WEBPACK_IMPORTED_MODULE_2__["BehaviorSubject"](JSON.parse(sessionStorage.getItem('Configuration')));
         this.currentConfigurations = this.currentConfigurationsSubject.asObservable();
         this._http.get('api/Config/GetAppConfigurations').subscribe(a => {
-            console.log("aaa");
             sessionStorage.setItem('Configuration', JSON.stringify(a));
             //this.Config.next(a);
             this.currentConfigurationsSubject.next(a);
@@ -2354,6 +2554,307 @@ PduDecoderService = __decorate([
 
 /***/ }),
 
+/***/ "./src/app/Shared/services/refresh-token.service.ts":
+/*!**********************************************************!*\
+  !*** ./src/app/Shared/services/refresh-token.service.ts ***!
+  \**********************************************************/
+/*! exports provided: RefreshTokenService */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "RefreshTokenService", function() { return RefreshTokenService; });
+/* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/common/http */ "./node_modules/@angular/common/fesm2015/http.js");
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm2015/core.js");
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rxjs */ "./node_modules/rxjs/_esm2015/index.js");
+/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! rxjs/operators */ "./node_modules/rxjs/_esm2015/operators/index.js");
+/* harmony import */ var _models_auth_token_type__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./../models/auth-token-type */ "./src/app/Shared/models/auth-token-type.ts");
+/* harmony import */ var _config__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../config */ "./src/app/Shared/config.ts");
+/* harmony import */ var _browser_storage_service__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./browser-storage.service */ "./src/app/Shared/services/browser-storage.service.ts");
+/* harmony import */ var _token_store_service__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./token-store.service */ "./src/app/Shared/services/token-store.service.ts");
+var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (undefined && undefined.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (undefined && undefined.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+
+
+
+
+
+
+
+
+let RefreshTokenService = class RefreshTokenService {
+    constructor(tokenStoreService, appConfig, http, browserStorageService) {
+        this.tokenStoreService = tokenStoreService;
+        this.appConfig = appConfig;
+        this.http = http;
+        this.browserStorageService = browserStorageService;
+        this.refreshTokenTimerCheckId = "is_refreshToken_timer_started";
+        this.refreshTokenSubscription = null;
+    }
+    scheduleRefreshToken(isAuthUserLoggedIn, calledFromLogin) {
+        this.unscheduleRefreshToken(false);
+        if (!isAuthUserLoggedIn) {
+            return;
+        }
+        const expDateUtc = this.tokenStoreService.getAccessTokenExpirationDateUtc();
+        if (!expDateUtc) {
+            throw new Error("This access token has not the `exp` property.");
+        }
+        const expiresAtUtc = expDateUtc.valueOf();
+        const nowUtc = new Date().valueOf();
+        const threeSeconds = 3000;
+        // threeSeconds instead of 1 to prevent other tab timers run less than threeSeconds
+        const initialDelay = Math.max(threeSeconds, expiresAtUtc - nowUtc - threeSeconds);
+        console.log("Initial scheduleRefreshToken Delay(ms)", initialDelay);
+        const timerSource$ = Object(rxjs__WEBPACK_IMPORTED_MODULE_2__["timer"])(initialDelay);
+        this.refreshTokenSubscription = timerSource$.subscribe(() => {
+            if (calledFromLogin || !this.isRefreshTokenTimerStartedInAnotherTab()) {
+                this.refreshToken(isAuthUserLoggedIn);
+            }
+            else {
+                this.scheduleRefreshToken(isAuthUserLoggedIn, false);
+            }
+        });
+        if (calledFromLogin || !this.isRefreshTokenTimerStartedInAnotherTab()) {
+            this.setRefreshTokenTimerStarted();
+        }
+    }
+    unscheduleRefreshToken(cancelTimerCheckToken) {
+        if (this.refreshTokenSubscription) {
+            this.refreshTokenSubscription.unsubscribe();
+        }
+        if (cancelTimerCheckToken) {
+            this.deleteRefreshTokenTimerCheckId();
+        }
+    }
+    invalidateCurrentTabId() {
+        if (!this.tokenStoreService.rememberMe()) {
+            return;
+        }
+        //const currentTabId = this.utilsService.getCurrentTabId();
+        //const timerStat = this.browserStorageService.getLocal(
+        //  this.refreshTokenTimerCheckId
+        //);
+        //if (timerStat && timerStat.tabId === currentTabId) {
+        //  this.setRefreshTokenTimerStopped();
+        //}
+    }
+    refreshToken(isAuthUserLoggedIn) {
+        const headers = new _angular_common_http__WEBPACK_IMPORTED_MODULE_0__["HttpHeaders"]({ "Content-Type": "application/json" });
+        const model = { refreshToken: this.tokenStoreService.getRawAuthToken(_models_auth_token_type__WEBPACK_IMPORTED_MODULE_4__["AuthTokenType"].RefreshToken) };
+        return this.http
+            .post(`${this.appConfig.apiUrl}/${this.appConfig.refreshTokenPath}`, model, { headers: headers })
+            .pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["map"])(response => response || {}), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["catchError"])((error) => Object(rxjs__WEBPACK_IMPORTED_MODULE_2__["throwError"])(error)))
+            .subscribe(result => {
+            console.log("RefreshToken Result", result);
+            this.tokenStoreService.storeLoginSession(result);
+            // this.deleteRefreshTokenTimerCheckId();
+            this.scheduleRefreshToken(isAuthUserLoggedIn, false);
+        });
+    }
+    isRefreshTokenTimerStartedInAnotherTab() {
+        if (!this.tokenStoreService.rememberMe()) {
+            return false; // It uses the session storage for the tokens and its access scope is limited to the current tab.
+        }
+        //const currentTabId = this.utilsService.getCurrentTabId();
+        //const timerStat = this.browserStorageService.getLocal(this.refreshTokenTimerCheckId);
+        //console.log("RefreshTokenTimer Check", {
+        //  refreshTokenTimerCheckId: timerStat,
+        //  currentTabId: currentTabId
+        //});
+        //const isStarted = timerStat && timerStat.isStarted === true && timerStat.tabId !== currentTabId;
+        //if (isStarted) {
+        //  console.log(`RefreshToken timer has already been started in another tab with tabId=${timerStat.tabId}.
+        //  currentTabId=${currentTabId}.`);
+        //}
+        //return isStarted;
+        return true;
+    }
+    setRefreshTokenTimerStarted() {
+        this.browserStorageService.setLocal(this.refreshTokenTimerCheckId, {
+            isStarted: true,
+        });
+    }
+    deleteRefreshTokenTimerCheckId() {
+        this.browserStorageService.removeLocal(this.refreshTokenTimerCheckId);
+    }
+    setRefreshTokenTimerStopped() {
+        this.browserStorageService.setLocal(this.refreshTokenTimerCheckId, {
+            isStarted: false,
+            tabId: -1
+        });
+    }
+};
+RefreshTokenService.ctorParameters = () => [
+    { type: _token_store_service__WEBPACK_IMPORTED_MODULE_7__["TokenStoreService"] },
+    { type: undefined, decorators: [{ type: _angular_core__WEBPACK_IMPORTED_MODULE_1__["Inject"], args: [_config__WEBPACK_IMPORTED_MODULE_5__["APP_CONFIG"],] }] },
+    { type: _angular_common_http__WEBPACK_IMPORTED_MODULE_0__["HttpClient"] },
+    { type: _browser_storage_service__WEBPACK_IMPORTED_MODULE_6__["BrowserStorageService"] }
+];
+RefreshTokenService = __decorate([
+    Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Injectable"])({
+        providedIn: 'root'
+    }),
+    __param(1, Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Inject"])(_config__WEBPACK_IMPORTED_MODULE_5__["APP_CONFIG"])),
+    __metadata("design:paramtypes", [_token_store_service__WEBPACK_IMPORTED_MODULE_7__["TokenStoreService"], Object, _angular_common_http__WEBPACK_IMPORTED_MODULE_0__["HttpClient"],
+        _browser_storage_service__WEBPACK_IMPORTED_MODULE_6__["BrowserStorageService"]])
+], RefreshTokenService);
+
+
+
+/***/ }),
+
+/***/ "./src/app/Shared/services/token-store.service.ts":
+/*!********************************************************!*\
+  !*** ./src/app/Shared/services/token-store.service.ts ***!
+  \********************************************************/
+/*! exports provided: TokenStoreService */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "TokenStoreService", function() { return TokenStoreService; });
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm2015/core.js");
+/* harmony import */ var jwt_decode__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! jwt-decode */ "./node_modules/jwt-decode/build/jwt-decode.esm.js");
+/* harmony import */ var _models_auth_token_type__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../models/auth-token-type */ "./src/app/Shared/models/auth-token-type.ts");
+/* harmony import */ var _browser_storage_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./browser-storage.service */ "./src/app/Shared/services/browser-storage.service.ts");
+/* harmony import */ var _config__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../config */ "./src/app/Shared/config.ts");
+var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (undefined && undefined.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (undefined && undefined.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+
+
+
+
+
+let TokenStoreService = class TokenStoreService {
+    constructor(browserStorageService, appConfig) {
+        this.browserStorageService = browserStorageService;
+        this.appConfig = appConfig;
+        this.rememberMeToken = "rememberMe_token";
+    }
+    getRawAuthToken(tokenType) {
+        if (this.rememberMe()) {
+            return this.browserStorageService.getLocal(_models_auth_token_type__WEBPACK_IMPORTED_MODULE_2__["AuthTokenType"][tokenType]);
+        }
+        else {
+            return this.browserStorageService.getSession(_models_auth_token_type__WEBPACK_IMPORTED_MODULE_2__["AuthTokenType"][tokenType]);
+        }
+    }
+    getDecodedAccessToken() {
+        return jwt_decode__WEBPACK_IMPORTED_MODULE_1__(this.getRawAuthToken(_models_auth_token_type__WEBPACK_IMPORTED_MODULE_2__["AuthTokenType"].AccessToken));
+    }
+    getAuthUserDisplayName() {
+        return this.getDecodedAccessToken().DisplayName;
+    }
+    getAccessTokenExpirationDateUtc() {
+        const decoded = this.getDecodedAccessToken();
+        if (decoded.exp === undefined) {
+            return null;
+        }
+        const date = new Date(0); // The 0 sets the date to the epoch
+        date.setUTCSeconds(decoded.exp);
+        return date;
+    }
+    isAccessTokenTokenExpired() {
+        const expirationDateUtc = this.getAccessTokenExpirationDateUtc();
+        if (!expirationDateUtc) {
+            return true;
+        }
+        return !(expirationDateUtc.valueOf() > new Date().valueOf());
+    }
+    deleteAuthTokens() {
+        if (this.rememberMe()) {
+            this.browserStorageService.removeLocal(_models_auth_token_type__WEBPACK_IMPORTED_MODULE_2__["AuthTokenType"][_models_auth_token_type__WEBPACK_IMPORTED_MODULE_2__["AuthTokenType"].AccessToken]);
+            this.browserStorageService.removeLocal(_models_auth_token_type__WEBPACK_IMPORTED_MODULE_2__["AuthTokenType"][_models_auth_token_type__WEBPACK_IMPORTED_MODULE_2__["AuthTokenType"].RefreshToken]);
+        }
+        else {
+            this.browserStorageService.removeSession(_models_auth_token_type__WEBPACK_IMPORTED_MODULE_2__["AuthTokenType"][_models_auth_token_type__WEBPACK_IMPORTED_MODULE_2__["AuthTokenType"].AccessToken]);
+            this.browserStorageService.removeSession(_models_auth_token_type__WEBPACK_IMPORTED_MODULE_2__["AuthTokenType"][_models_auth_token_type__WEBPACK_IMPORTED_MODULE_2__["AuthTokenType"].RefreshToken]);
+        }
+        this.browserStorageService.removeLocal(this.rememberMeToken);
+    }
+    setToken(tokenType, tokenValue) {
+        if (this.isEmptyString(tokenValue)) {
+            console.error(`${_models_auth_token_type__WEBPACK_IMPORTED_MODULE_2__["AuthTokenType"][tokenType]} is null or empty.`);
+        }
+        if (tokenType === _models_auth_token_type__WEBPACK_IMPORTED_MODULE_2__["AuthTokenType"].AccessToken && this.isEmptyString(tokenValue)) {
+            throw new Error("AccessToken can't be null or empty.");
+        }
+        if (this.rememberMe()) {
+            this.browserStorageService.setLocal(_models_auth_token_type__WEBPACK_IMPORTED_MODULE_2__["AuthTokenType"][tokenType], tokenValue);
+        }
+        else {
+            this.browserStorageService.setSession(_models_auth_token_type__WEBPACK_IMPORTED_MODULE_2__["AuthTokenType"][tokenType], tokenValue);
+        }
+    }
+    getDecodedTokenRoles() {
+        const decodedToken = this.getDecodedAccessToken();
+        const roles = decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+        if (!roles) {
+            return null;
+        }
+        if (Array.isArray(roles)) {
+            return roles.map(role => role.toLowerCase());
+        }
+        else {
+            return [roles.toLowerCase()];
+        }
+    }
+    storeLoginSession(response) {
+        this.setToken(_models_auth_token_type__WEBPACK_IMPORTED_MODULE_2__["AuthTokenType"].AccessToken, response[this.appConfig.accessTokenObjectKey]);
+        this.setToken(_models_auth_token_type__WEBPACK_IMPORTED_MODULE_2__["AuthTokenType"].RefreshToken, response[this.appConfig.refreshTokenObjectKey]);
+    }
+    rememberMe() {
+        return this.browserStorageService.getLocal(this.rememberMeToken) === true;
+    }
+    setRememberMe(value) {
+        this.browserStorageService.setLocal(this.rememberMeToken, value);
+    }
+    hasStoredAccessAndRefreshTokens() {
+        const accessToken = this.getRawAuthToken(_models_auth_token_type__WEBPACK_IMPORTED_MODULE_2__["AuthTokenType"].AccessToken);
+        const refreshToken = this.getRawAuthToken(_models_auth_token_type__WEBPACK_IMPORTED_MODULE_2__["AuthTokenType"].RefreshToken);
+        return !this.isEmptyString(accessToken) && !this.isEmptyString(refreshToken);
+    }
+    isEmptyString(value) {
+        return !value || 0 === value.length;
+    }
+};
+TokenStoreService.ctorParameters = () => [
+    { type: _browser_storage_service__WEBPACK_IMPORTED_MODULE_3__["BrowserStorageService"] },
+    { type: undefined, decorators: [{ type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Inject"], args: [_config__WEBPACK_IMPORTED_MODULE_4__["APP_CONFIG"],] }] }
+];
+TokenStoreService = __decorate([
+    Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Injectable"])({
+        providedIn: 'root'
+    }),
+    __param(1, Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Inject"])(_config__WEBPACK_IMPORTED_MODULE_4__["APP_CONFIG"])),
+    __metadata("design:paramtypes", [_browser_storage_service__WEBPACK_IMPORTED_MODULE_3__["BrowserStorageService"], Object])
+], TokenStoreService);
+
+
+
+/***/ }),
+
 /***/ "./src/app/Shared/shared.modules.ts":
 /*!******************************************!*\
   !*** ./src/app/Shared/shared.modules.ts ***!
@@ -2382,12 +2883,20 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _angular_material_icon__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! @angular/material/icon */ "./node_modules/@angular/material/esm2015/icon.js");
 /* harmony import */ var _angular_material_tooltip__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! @angular/material/tooltip */ "./node_modules/@angular/material/esm2015/tooltip.js");
 /* harmony import */ var _services_pdu_decoder_service__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./services/pdu-decoder.service */ "./src/app/Shared/services/pdu-decoder.service.ts");
+/* harmony import */ var _config__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./config */ "./src/app/Shared/config.ts");
+/* harmony import */ var _services_token_store_service__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./services/token-store.service */ "./src/app/Shared/services/token-store.service.ts");
+/* harmony import */ var _services_refresh_token_service__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./services/refresh-token.service */ "./src/app/Shared/services/refresh-token.service.ts");
+/* harmony import */ var _services_browser_storage_service__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ./services/browser-storage.service */ "./src/app/Shared/services/browser-storage.service.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+
+
+
+
 
 
 
@@ -2461,6 +2970,7 @@ sharedModule = __decorate([
             _services_config_service__WEBPACK_IMPORTED_MODULE_13__["ConfigService"],
             _services_pdu_decoder_service__WEBPACK_IMPORTED_MODULE_17__["PduDecoderService"],
             //MatDatepickerModule,
+            _services_browser_storage_service__WEBPACK_IMPORTED_MODULE_21__["BrowserStorageService"],
             {
                 provide: _angular_material__WEBPACK_IMPORTED_MODULE_0__["DateAdapter"], useFactory: () => {
                     if (localStorage.getItem('Language') == 'ar')
@@ -2480,7 +2990,10 @@ sharedModule = __decorate([
                     return service;
                 },
                 deps: [_ngx_translate_core__WEBPACK_IMPORTED_MODULE_12__["TranslateService"]]
-            }
+            },
+            { provide: _config__WEBPACK_IMPORTED_MODULE_18__["APP_CONFIG"], useValue: _config__WEBPACK_IMPORTED_MODULE_18__["AppConfig"] },
+            _services_token_store_service__WEBPACK_IMPORTED_MODULE_19__["TokenStoreService"],
+            _services_refresh_token_service__WEBPACK_IMPORTED_MODULE_20__["RefreshTokenService"],
         ]
     })
 ], sharedModule);
@@ -2745,9 +3258,9 @@ var __metadata = (undefined && undefined.__metadata) || function (k, v) {
 
 let AppheaderComponent = class AppheaderComponent {
     constructor(auth, route) {
+        //auth.getLoggedInUser.subscribe(user => this.setUser(user));
         this.auth = auth;
         this.route = route;
-        auth.getLoggedInUser.subscribe(user => this.setUser(user));
         this.setUser(JSON.parse(sessionStorage.getItem("currentUser")));
     }
     ngOnInit() {
@@ -2817,10 +3330,10 @@ var __metadata = (undefined && undefined.__metadata) || function (k, v) {
 
 let AppmenuComponent = class AppmenuComponent {
     constructor(auth, _config, langServvice) {
+        //auth.getLoggedInUser.subscribe(user => this.setUser(user));
         this.auth = auth;
         this._config = _config;
         this.langServvice = langServvice;
-        auth.getLoggedInUser.subscribe(user => this.setUser(user));
         this.setUser(JSON.parse(sessionStorage.getItem("currentUser")));
     }
     ngOnInit() {
@@ -3172,7 +3685,7 @@ Object(_angular_platform_browser_dynamic__WEBPACK_IMPORTED_MODULE_2__["platformB
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! D:\Desktop\TestApps\ActiveProbLTE\APCEF\ActiveProbLTE\ClientApp\src\main.ts */"./src/main.ts");
+module.exports = __webpack_require__(/*! D:\source\repos\activeprob\New folder\ActiveProbLTE\ClientApp\src\main.ts */"./src/main.ts");
 
 
 /***/ })

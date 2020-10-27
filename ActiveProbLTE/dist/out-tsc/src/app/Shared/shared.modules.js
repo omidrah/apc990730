@@ -8,22 +8,21 @@ import { MatSortModule, DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatPagin
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { ReactiveFormsModule, FormsModule } from "@angular/forms";
-import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
-import { NgxPaginationModule } from 'ngx-pagination';
-import { ToastrModule } from 'ngx-toastr';
-import { Ng2SearchPipeModule } from 'ng2-search-filter';
 import { MatTableModule } from '@angular/material';
-import { MaterialPersianDateAdapter, PERSIAN_DATE_FORMATS, MaterialDateAdapter } from './models/material-persian-date-adapter';
-import { BreadcrumbComponent } from '../breadcrumb/breadcrumb.component';
 import { RouterModule } from '@angular/router';
-import { PaginatorIntlService } from './services/CustomPaginatorConfiguration';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { ConfigService } from './services/config.service';
 import { Platform } from '@angular/cdk/platform';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { NgxPaginationModule } from 'ngx-pagination';
+import { ToastrModule } from 'ngx-toastr';
+import { Ng2SearchPipeModule } from 'ng2-search-filter';
+import { BreadcrumbComponent } from '../breadcrumb/breadcrumb.component';
+import { MaterialPersianDateAdapter, PERSIAN_DATE_FORMATS, MaterialDateAdapter } from './models/material-persian-date-adapter';
+import { PaginatorIntlService } from './services/CustomPaginatorConfiguration';
+import { ConfigService } from './services/config.service';
 import { PduDecoderService } from './services/pdu-decoder.service';
-import { APP_CONFIG, AppConfig } from './config';
 var sharedModule = /** @class */ (function () {
     function sharedModule() {
     }
@@ -99,8 +98,7 @@ var sharedModule = /** @class */ (function () {
                         return service;
                     },
                     deps: [TranslateService]
-                },
-                { provide: APP_CONFIG, useValue: AppConfig }
+                }
             ]
         })
     ], sharedModule);

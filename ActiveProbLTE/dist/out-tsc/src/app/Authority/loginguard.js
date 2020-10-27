@@ -21,22 +21,62 @@ var LoginGruard = /** @class */ (function () {
         this.toast = toast;
         this.auth = auth;
         this.translate = translate;
-        this.myAppUrl = '';
-        this.myAppUrl = baseUrl;
+        this.permissionObjectKey = "permission";
     }
     LoginGruard.prototype.canActivate = function (route, state) {
-        var _this = this;
-        this.logSubc = this.auth.currentUser.subscribe(function (data) { data ? _this.islogged = true : _this.islogged = false; });
-        if (this.islogged) {
-            //this.router.navigateByUrl(state.url);         
+        var RouteData = route.data;
+        var returnUrl = state.url;
+        return this.hasAuthUserAccessToThisRoute(RouteData, returnUrl);
+    };
+    LoginGruard.prototype.canActivateChild = function (childRoute, state) {
+        var RouteData = childRoute.data;
+        var returnUrl = state.url;
+        return this.hasAuthUserAccessToThisRoute(RouteData, returnUrl);
+    };
+    LoginGruard.prototype.canLoad = function (route) {
+        if (route.data) {
+            var permissionData = route.data[this.permissionObjectKey];
+            var returnUrl = "/" + route.path;
+            return this.hasAuthUserAccessToThisRoute(permissionData, returnUrl);
+        }
+        else {
             return true;
         }
-        this.router.navigate(['login'], { queryParams: { returnURL: route.url } });
-        this.toast.error(this.translate.instant('NoAccessToThisPage'), this.translate.instant('Warning'));
-        return false;
     };
-    LoginGruard.prototype.ngOnDestroy = function () {
-        this.logSubc.unsubscribe();
+    LoginGruard.prototype.hasAuthUserAccessToThisRoute = function (permissionData, returnUrl) {
+        if (!this.auth.isAuthUserLoggedIn()) {
+            this.showAccessDenied(returnUrl);
+            return false;
+        }
+        var TokenHelp = this.auth.getDecodedAccessToken();
+        ;
+        if (this.auth.isAuthUserInRole("Admin")) {
+            return true;
+        }
+        if (Array.isArray(permissionData.deniedRoles) && Array.isArray(permissionData.permittedRoles)) {
+            throw new Error("Don't set both 'deniedRoles' and 'permittedRoles' in route data.");
+        }
+        if (Array.isArray(permissionData.permittedRoles)) {
+            var isInRole = this.auth.isAuthUserInRoles(permissionData.permittedRoles);
+            if (isInRole) {
+                return true;
+            }
+            this.showAccessDenied(returnUrl);
+            return false;
+        }
+        if (Array.isArray(permissionData.deniedRoles)) {
+            var isInRole = this.auth.isAuthUserInRoles(permissionData.deniedRoles);
+            if (!isInRole) {
+                return true;
+            }
+            this.showAccessDenied(returnUrl);
+            return false;
+        }
+        return true;
+    };
+    LoginGruard.prototype.showAccessDenied = function (returnUrl) {
+        this.router.navigate(['/login'], { queryParams: { returnURL: returnUrl } });
+        this.toast.error(this.translate.instant('NoAccessToThisPage'), this.translate.instant('Warning'));
     };
     LoginGruard = __decorate([
         Injectable({ providedIn: 'root' }),
