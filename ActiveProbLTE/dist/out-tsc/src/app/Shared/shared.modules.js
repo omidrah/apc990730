@@ -23,6 +23,8 @@ import { MaterialPersianDateAdapter, PERSIAN_DATE_FORMATS, MaterialDateAdapter }
 import { PaginatorIntlService } from './services/CustomPaginatorConfiguration';
 import { ConfigService } from './services/config.service';
 import { PduDecoderService } from './services/pdu-decoder.service';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthenticationInterceptor } from './services/authentication.interceptor';
 var sharedModule = /** @class */ (function () {
     function sharedModule() {
     }
@@ -98,6 +100,9 @@ var sharedModule = /** @class */ (function () {
                         return service;
                     },
                     deps: [TranslateService]
+                },
+                {
+                    provide: HTTP_INTERCEPTORS, useClass: AuthenticationInterceptor, multi: true
                 }
             ]
         })

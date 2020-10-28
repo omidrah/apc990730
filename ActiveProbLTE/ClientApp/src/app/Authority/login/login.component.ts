@@ -42,7 +42,7 @@ export class LoginComponent implements OnInit {
   }
   ngOnInit() {
     //reset login status
-    //this.authenticationService.logout();
+    this.authenticationService.logout();
     // get return url from route parameters or default to '/'
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'];
   }
@@ -77,9 +77,9 @@ export class LoginComponent implements OnInit {
           console.log("Login error", error);
           //this.toastrService.warning('{{WrongUsernameOrPassword | translate}}', 'Warning');
           if (error.status === 401) {
-            console.log("Invalid User name or Password. Please try again.");
+               console.log("Invalid User name or Password. Please try again.");
           } else {
-            console.log(`${error.statusText}: ${error.message}`);
+                console.log(`${error.statusText}: ${error.message}`);
           }
           this.toastrService.warning(this.translate.instant('WrongUsernameOrPassword'), this.translate.instant('Warning'));
         });

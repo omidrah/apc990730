@@ -27,6 +27,8 @@ import { PaginatorIntlService } from './services/CustomPaginatorConfiguration';
 import { BrowserStorageService } from './services/browser-storage.service';
 import { ConfigService } from './services/config.service';
 import { PduDecoderService } from './services/pdu-decoder.service';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthenticationInterceptor } from './services/authentication.interceptor';
 
 @NgModule({
   declarations: [
@@ -100,6 +102,9 @@ import { PduDecoderService } from './services/pdu-decoder.service';
         return service;
       },
       deps: [TranslateService]
+    },
+    {
+      provide: HTTP_INTERCEPTORS, useClass: AuthenticationInterceptor, multi:true
     }
   ]
 })
