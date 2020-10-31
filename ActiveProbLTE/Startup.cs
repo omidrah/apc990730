@@ -81,8 +81,6 @@ namespace ActiveProbeCore
         }
         public void AddCustomOptions(IServiceCollection services)
         {
-
-          
             Util.ConnectionStrings = Configuration.GetConnectionString("localConnection");
             services.AddDbContext<ActiveProbeCoreContext>(
              //options => options.UseSqlServer(Configuration.GetConnectionString("localConnection"))
