@@ -1,6 +1,7 @@
 
 namespace ActiveProbe.Utils.ViewModel
 {
+	//Hi omid
     public class APIResult<T>
     {
         public bool Succeed { get; set; }
